@@ -8,26 +8,13 @@ jobs:
     steps:
       - name: Set VERSION env
         run: echo ::set-env name=VERSION::0.0.${{ github.run_number }}-preview
-        
-      - name: Echo 1 Version
-        run: echo $VERSION
-      - name: Echo 2 Version
-        run: echo ${{ env.VERSION }}
-      - name: Echo 3 Version
-        run: echo $VERSION
-        env:
-          VERSION: ${{ env.VERSION }}
 
       - uses: actions/checkout@master
 
       - run: docker build -t wled/test:latest --build-arg VERSION . --target test
-        env:
-          VERSION: 0.0.0-test000001
       - run: docker run wled/test:latest
 
       - run: docker build -t wled/push:latest --build-arg VERSION . --target push
-        env:
-          VERSION: 0.0.0-test000001
-      - run: docker run --env NUGET_API_KEY=${{ env.NUGET_API_KEY }} wled/push:latest
+      - run: docker run --env NUGET_API_KEY wled/push:latest
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
