@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set VERSION env
-        run: echo ::set-env VERSION::0.0.${{ github.run_number }}-preview
+        run: echo ::set-env name=VERSION::0.0.${{ github.run_number }}-preview
         
       - name: Echo 1 Version
         run: echo $VERSION
