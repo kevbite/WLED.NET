@@ -30,6 +30,6 @@ ARG VERSION
 RUN dotnet pack --configuration Release -p:Version=${VERSION} --no-build
 
 FROM pack as push
-ENV NUGET_API_KEY=
-ENTRYPOINT ["dotnet", "nuget", "push", "./src/Kevsoft.WLED/bin/Release/*.nupkg"]
-CMD ["--source", "NuGet.org", "--api-key", "${NUGET_API_KEY}"]
+RUN env
+
+ENTRYPOINT ["dotnet", "nuget", "push", "./src/Kevsoft.WLED/bin/Release/*.nupkg", "--source", "NuGet.org"]
