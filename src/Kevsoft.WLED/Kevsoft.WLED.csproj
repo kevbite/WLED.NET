@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <PackageId>Kevosft.WLED</PackageId>
+    <PackageId>WLED</PackageId>
     <Title>WLED.NET</Title>
     <PackageTags>WLED</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
