@@ -15,7 +15,7 @@ jobs:
         run: echo ${{ env.VERSION }}
       - name: Echo 3 Version
         run: echo $VERSION
-        with:
+        env:
           VERSION: ${{ env.VERSION }}
 
       - uses: actions/checkout@master
