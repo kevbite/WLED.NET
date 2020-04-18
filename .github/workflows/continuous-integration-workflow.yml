@@ -15,7 +15,5 @@ jobs:
       - run: docker run wled/test:latest
 
       - run: docker build -t wled/push:latest --build-arg VERSION . --target push
-      - run: docker run wled/push:latest --api-key ${{ env.NUGET_API_KEY }}
+      - run: docker run wled/push:latest --api-key ${{ secrets.NUGET_API_KEY }}
         if: github.ref == 'refs/heads/master'
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
