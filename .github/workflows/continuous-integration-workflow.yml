@@ -1,10 +1,13 @@
-name: Build
+name: Continuous Integration Workflow
 on: [push]
 
-name: Greeting
-runs-on: ubuntu-latest
-steps:
-  - uses: actions/checkout@master
+jobs:
+  build:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
 
-  - run: docker build -t wled/test:latest . --target test
-  - run: docker run wled/test:latest
+      - run: docker build -t wled/test:latest . --target test
+      - run: docker run wled/test:latest
+      
