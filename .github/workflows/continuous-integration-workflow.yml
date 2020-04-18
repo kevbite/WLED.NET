@@ -1,0 +1,10 @@
+name: Build
+on: [push]
+
+name: Greeting
+runs-on: ubuntu-latest
+steps:
+  - uses: actions/checkout@master
+
+  - run: docker build -t wled/test:latest . --target test
+  - run: docker run wled/test:latest
