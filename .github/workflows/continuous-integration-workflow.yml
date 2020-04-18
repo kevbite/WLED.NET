@@ -6,7 +6,7 @@ jobs:
     name: Build and Test
     runs-on: ubuntu-latest
     env:
-      VERSION: 0.0.$GITHUB_RUN_NUMBER-preview
+      VERSION: 0.0.${{ env.GITHUB_RUN_NUMBER }}-preview
     steps:
       - uses: actions/checkout@master
 
