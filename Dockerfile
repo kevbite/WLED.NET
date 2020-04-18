@@ -29,7 +29,7 @@ FROM build as pack
 ARG VERSION
 RUN dotnet pack --configuration Release -p:Version=${VERSION} --no-build
 
-FROM pack
+FROM pack as push
 ENV NUGET_API_KEY=
 ENTRYPOINT ["dotnet", "nuget", "push", "./**/*.nupkg"]
 CMD ["--source", "NuGet.org", "--api-key", ${NUGET_API_KEY}]
