@@ -12,11 +12,13 @@ jobs:
       - uses: actions/checkout@master
 
       - run: docker build -t wled/test:latest --build-arg VERSION . --target test
+        env:
+          VERSION: 0.0.0-test000001
       - run: docker run wled/test:latest
 
       - run: docker build -t wled/push:latest --build-arg VERSION . --target push
         env:
-          VERSION: ${{ env.VERSION }}
+          VERSION: 0.0.0-test000001
       - run: docker run --env NUGET_API_KEY=${{ env.NUGET_API_KEY }} wled/push:latest
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
