@@ -10,12 +10,12 @@ jobs:
         run: echo ::set-env VERSION=0.0.$GITHUB_RUN_NUMBER-preview
         
       - name: Echo 1 Version
-        run: echo $VERSION
+        with: echo $VERSION
       - name: Echo 2 Version
-        run: echo ${{ env.VERSION }}
+        with: echo ${{ env.VERSION }}
       - name: Echo 3 Version
         run: echo $VERSION
-        env:
+        with:
           VERSION: ${{ env.VERSION }}
 
       - uses: actions/checkout@master
