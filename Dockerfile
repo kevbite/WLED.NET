@@ -1,4 +1,6 @@
+ARG VERSION=0.0.0
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS restore
+ARG VERSION
 WORKDIR /
 
 COPY ./nuget.config .
@@ -9,21 +11,25 @@ COPY ./test/Kevsoft.WLED.Tests/*.csproj ./test/Kevsoft.WLED.Tests/
 RUN dotnet restore
 
 FROM restore as build
+ARG VERSION
 COPY ./icon.png .
 COPY ./src/Kevsoft.WLED/ ./src/Kevsoft.WLED/
-RUN dotnet build ./src/**/*.csproj --configuration Release --no-restore
+RUN dotnet build ./src/**/*.csproj --configuration Release -p:Version=${VERSION} --no-restore
 
 FROM build as build-tests
+ARG VERSION
 COPY ./test/Kevsoft.WLED.Tests/ ./test/Kevsoft.WLED.Tests/
-RUN dotnet build ./test/**/*.csproj --configuration Release --no-restore
+RUN dotnet build ./test/**/*.csproj --configuration Release -p:Version=${VERSION} --no-restore
 
 FROM build-tests as test
 ENTRYPOINT ["dotnet", "test", "./test/Kevsoft.WLED.Tests/Kevsoft.WLED.Tests.csproj", "--configuration", "Release", "--no-restore", "--no-build"]
 CMD ["--logger" , "trx", "--results-directory", "./TestResults"]
 
 FROM build as pack
-RUN dotnet pack --configuration Release --no-build
+ARG VERSION
+RUN dotnet pack --configuration Release -p:Version=${VERSION} --no-build
 
 FROM pack
+ENV NUGET_API_KEY=
 ENTRYPOINT ["dotnet", "nuget", "push", "./**/*.nupkg"]
-CMD ["--source", "NuGet.org"]
+CMD ["--source", "NuGet.org", "--api-key", ${NUGET_API_KEY}]
