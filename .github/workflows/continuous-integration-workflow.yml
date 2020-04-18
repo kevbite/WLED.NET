@@ -7,14 +7,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set VERSION env
-        run: echo ::set-env VERSION::0.0.$GITHUB_RUN_NUMBER-preview
+        run: echo ::set-env VERSION=0.0.$GITHUB_RUN_NUMBER-preview
         
       - uses: actions/checkout@master
 
-      - run: docker build -t wled/test:latest --build-arg VERSION=$VERSION . --target test
+      - run: docker build -t wled/test:latest --build-arg VERSION . --target test
       - run: docker run wled/test:latest
 
-      - run: docker build -t wled/push:latest --build-arg VERSION=$VERSION . --target push
+      - run: docker build -t wled/push:latest --build-arg VERSION . --target push
       - run: docker run --env NUGET_API_KEY=$NUGET_API_KEY wled/push:latest
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
