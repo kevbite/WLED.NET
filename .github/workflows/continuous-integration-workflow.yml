@@ -5,9 +5,10 @@ jobs:
   build:
     name: Build and Test
     runs-on: ubuntu-latest
-    env:
-      VERSION: 0.0.${{ GITHUB_RUN_NUMBER }}-preview
     steps:
+      - name: Set VERSION env
+        run: echo ::set-env VERSION=0.0.${{ env.GITHUB_RUN_NUMBER }}-preview
+        
       - uses: actions/checkout@master
 
       - run: docker build -t wled/test:latest --build-arg VERSION=$VERSION . --target test
