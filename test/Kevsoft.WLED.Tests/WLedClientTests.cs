@@ -54,7 +54,8 @@ namespace Kevsoft.WLED.Tests
       ""send"": {state.UdpPackets.Send.ToString().ToLower()},
       ""recv"": {state.UdpPackets.Receive.ToString().ToLower()}
     }},
-    ""seg"": [{string.Join(", ", state.Segments.Select(seg => {
+    ""seg"": [{string.Join(", ", state.Segments.Select(seg =>
+            {
                 return $@"{{
       ""start"": {seg.Start},
       ""stop"": {seg.Stop},
@@ -106,6 +107,26 @@ namespace Kevsoft.WLED.Tests
             var root = await client.GetInformation();
 
             root.Should().BeEquivalentTo(expected);
+        }
+
+
+        [Fact]
+        public async Task GetEffectsData()
+        {
+            var expected = _fixture.Create<Information>();
+            var baseUri = $"http://{Guid.NewGuid():N}.com";
+
+            var mockHttpMessageHandler = new MockHttpMessageHandler();
+            var json = @"[""Effect A"", ""Effect B"" ]";
+            mockHttpMessageHandler.AppendResponse($"{baseUri}/json/eff", json);
+
+            var client = new WLedClient(mockHttpMessageHandler, baseUri);
+
+            var root = await client.GetEffects();
+
+            root.Should().BeEquivalentTo(new[]
+                {"Effect A", "Effect B"}
+            );
         }
 
         private string CreateInformationJson(Information information)
