@@ -13,7 +13,7 @@ namespace Kevsoft.WLED
         {
             _client = new HttpClient(httpMessageHandler)
             {
-                BaseAddress = new Uri(new Uri(baseUri, UriKind.Absolute), new Uri("/json", UriKind.Relative)),
+                BaseAddress = new Uri(baseUri, UriKind.Absolute),
             };
         }
 
@@ -24,11 +24,22 @@ namespace Kevsoft.WLED
 
         public async Task<WLedRootResponse> Get()
         {
-            var message = await _client.GetAsync("");
+            var message = await _client.GetAsync("json");
 
             message.EnsureSuccessStatusCode();
 
             var response = await JsonSerializer.DeserializeAsync<WLedRootResponse>(await message.Content.ReadAsStreamAsync());
+
+            return response;
+        }
+
+        public async Task<State> GetState()
+        {
+            var message = await _client.GetAsync("json/state");
+
+            message.EnsureSuccessStatusCode();
+
+            var response = await JsonSerializer.DeserializeAsync<State>(await message.Content.ReadAsStreamAsync());
 
             return response;
         }

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -8,48 +9,16 @@ namespace Kevsoft.WLED.Tests
 {
     public class WLedClientTests
     {
+        private readonly Fixture _fixture = new Fixture();
+
         [Fact]
         public async Task GetsAllData()
         {
-            var fixture = new Fixture();
-            var expected = fixture.Create<WLedRootResponse>();
-            var baseUri = "http://test123.com";
+            var expected = _fixture.Create<WLedRootResponse>();
+            var baseUri = $"http://{Guid.NewGuid():N}.com";
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             var json = $@"{{
-  ""state"": {{
-    ""on"": {expected.State.On.ToString().ToLower()},
-    ""bri"": {expected.State.Brightness},
-    ""transition"": {expected.State.Transition},
-    ""ps"": {expected.State.PresetId},
-    ""pl"": {expected.State.PlaylistId},
-    ""nl"": {{
-      ""on"": {expected.State.Nightlight.On.ToString().ToLower()},
-      ""dur"": {expected.State.Nightlight.Duration},
-      ""fade"": {expected.State.Nightlight.Fade.ToString().ToLower()},
-      ""tbri"": {expected.State.Nightlight.TargetBrightness}
-    }},
-    ""udpn"": {{
-      ""send"": {expected.State.UdpPackets.Send.ToString().ToLower()},
-      ""recv"": {expected.State.UdpPackets.Receive.ToString().ToLower()}
-    }},
-    ""seg"": [{string.Join(", ", expected.State.Segments.Select(seg => {
-                return $@"{{
-      ""start"": {seg.Start},
-      ""stop"": {seg.Stop},
-      ""len"": {seg.Length},
-      ""col"": [
-        {string.Join(", ", seg.Colors.Select(col => $"[{string.Join<int>(",", col)}]"))}
-      ],
-      ""fx"": {seg.EffectId},
-      ""sx"": {seg.EffectSpeed},
-      ""ix"": {seg.EffectIntensity},
-      ""pal"": {seg.ColorPaletteId},
-      ""sel"": {seg.Selected.ToString().ToLower()},
-      ""rev"": {seg.Reverse.ToString().ToLower()},
-      ""cln"": -1
-    }}";
-            }))}]
-  }},
+  ""state"": {CreateStateJson(expected.State)},
   ""info"": {{
     ""ver"": ""{expected.Information.VersionName}"",
     ""vid"": {expected.Information.BuildId},
@@ -87,6 +56,61 @@ namespace Kevsoft.WLED.Tests
             var client = new WLedClient(mockHttpMessageHandler, baseUri);
 
             var root = await client.Get();
+
+            root.Should().BeEquivalentTo(expected);
+        }
+
+        private string CreateStateJson(State state)
+        {
+            return $@"{{
+    ""on"": {state.On.ToString().ToLower()},
+    ""bri"": {state.Brightness},
+    ""transition"": {state.Transition},
+    ""ps"": {state.PresetId},
+    ""pl"": {state.PlaylistId},
+    ""nl"": {{
+      ""on"": {state.Nightlight.On.ToString().ToLower()},
+      ""dur"": {state.Nightlight.Duration},
+      ""fade"": {state.Nightlight.Fade.ToString().ToLower()},
+      ""tbri"": {state.Nightlight.TargetBrightness}
+    }},
+    ""udpn"": {{
+      ""send"": {state.UdpPackets.Send.ToString().ToLower()},
+      ""recv"": {state.UdpPackets.Receive.ToString().ToLower()}
+    }},
+    ""seg"": [{string.Join(", ", state.Segments.Select(seg => {
+                return $@"{{
+      ""start"": {seg.Start},
+      ""stop"": {seg.Stop},
+      ""len"": {seg.Length},
+      ""col"": [
+        {string.Join(", ", seg.Colors.Select(col => $"[{string.Join<int>(",", col)}]"))}
+      ],
+      ""fx"": {seg.EffectId},
+      ""sx"": {seg.EffectSpeed},
+      ""ix"": {seg.EffectIntensity},
+      ""pal"": {seg.ColorPaletteId},
+      ""sel"": {seg.Selected.ToString().ToLower()},
+      ""rev"": {seg.Reverse.ToString().ToLower()},
+      ""cln"": -1
+    }}";
+            }))}]
+  }}";
+        }
+
+        [Fact]
+        public async Task GetStateData()
+        {
+            var expected = _fixture.Create<State>();
+            var baseUri = $"http://{Guid.NewGuid():N}.com";
+
+            var mockHttpMessageHandler = new MockHttpMessageHandler();
+            var json = CreateStateJson(expected);
+            mockHttpMessageHandler.AppendResponse($"{baseUri}/json/state", json);
+
+            var client = new WLedClient(mockHttpMessageHandler, baseUri);
+
+            var root = await client.GetState();
 
             root.Should().BeEquivalentTo(expected);
         }
