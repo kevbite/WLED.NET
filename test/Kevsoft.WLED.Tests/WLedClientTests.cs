@@ -113,7 +113,6 @@ namespace Kevsoft.WLED.Tests
         [Fact]
         public async Task GetEffectsData()
         {
-            var expected = _fixture.Create<Information>();
             var baseUri = $"http://{Guid.NewGuid():N}.com";
 
             var mockHttpMessageHandler = new MockHttpMessageHandler();
@@ -126,6 +125,24 @@ namespace Kevsoft.WLED.Tests
 
             root.Should().BeEquivalentTo(new[]
                 {"Effect A", "Effect B"}
+            );
+        }
+
+        [Fact]
+        public async Task GetPalettesData()
+        {;
+            var baseUri = $"http://{Guid.NewGuid():N}.com";
+
+            var mockHttpMessageHandler = new MockHttpMessageHandler();
+            var json = @"[""Palette A"", ""Palette B"" ]";
+            mockHttpMessageHandler.AppendResponse($"{baseUri}/json/pal", json);
+
+            var client = new WLedClient(mockHttpMessageHandler, baseUri);
+
+            var root = await client.GetPalettes();
+
+            root.Should().BeEquivalentTo(new[]
+                {"Palette A", "Palette B"}
             );
         }
 

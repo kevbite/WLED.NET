@@ -65,5 +65,16 @@ namespace Kevsoft.WLED
 
             return response;
         }
+
+        public async Task<string[]> GetPalettes()
+        {
+            var message = await _client.GetAsync("json/pal");
+
+            message.EnsureSuccessStatusCode();
+
+            var response = await JsonSerializer.DeserializeAsync<string[]>(await message.Content.ReadAsStreamAsync());
+
+            return response;
+        }
     }
 }
