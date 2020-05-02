@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoFixture;
 using FluentAssertions;
+using Microsoft.VisualBasic;
 using Xunit;
 
 namespace Kevsoft.WLED.Tests
@@ -19,32 +20,7 @@ namespace Kevsoft.WLED.Tests
             var mockHttpMessageHandler = new MockHttpMessageHandler();
             var json = $@"{{
   ""state"": {CreateStateJson(expected.State)},
-  ""info"": {{
-    ""ver"": ""{expected.Information.VersionName}"",
-    ""vid"": {expected.Information.BuildId},
-    ""leds"": {{
-      ""count"": {expected.Information.Leds.Count},
-      ""rgbw"": {expected.Information.Leds.Rgbw.ToString().ToLower()},
-      ""pin"": [{string.Join(",", expected.Information.Leds.Pin)}],
-      ""pwr"": {expected.Information.Leds.PowerUsage},
-      ""maxpwr"": {expected.Information.Leds.MaximumPower},
-      ""maxseg"": {expected.Information.Leds.MaximumSegments}
-    }},
-    ""name"": ""{expected.Information.Name}"",
-    ""udpport"": {expected.Information.UdpPort},
-    ""live"": {expected.Information.Live.ToString().ToLower()},
-    ""fxcount"": {expected.Information.EffectsCount},
-    ""palcount"": {expected.Information.PalettesCount},
-    ""arch"": ""{expected.Information.Arch}"",
-    ""core"": ""{expected.Information.Core}"",
-    ""freeheap"": {expected.Information.FreeHeapMemory},
-    ""uptime"": {expected.Information.UpTime},
-    ""opt"": {expected.Information.Opt},
-    ""brand"": ""{expected.Information.Brand}"",
-    ""product"": ""{expected.Information.Product}"",
-    ""btype"": ""{expected.Information.BuildType}"",
-    ""mac"": ""{expected.Information.MacAddress}""
-  }},
+  ""info"": {CreateInformationJson(expected.Information)},
   ""effects"": [
     {string.Join(", ", expected.Effects.Select(x => $@"""{x}"""))}
   ],
@@ -113,6 +89,53 @@ namespace Kevsoft.WLED.Tests
             var root = await client.GetState();
 
             root.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public async Task GetInformationData()
+        {
+            var expected = _fixture.Create<Information>();
+            var baseUri = $"http://{Guid.NewGuid():N}.com";
+
+            var mockHttpMessageHandler = new MockHttpMessageHandler();
+            var json = CreateInformationJson(expected);
+            mockHttpMessageHandler.AppendResponse($"{baseUri}/json/info", json);
+
+            var client = new WLedClient(mockHttpMessageHandler, baseUri);
+
+            var root = await client.GetInformation();
+
+            root.Should().BeEquivalentTo(expected);
+        }
+
+        private string CreateInformationJson(Information information)
+        {
+            return $@"{{
+    ""ver"": ""{information.VersionName}"",
+    ""vid"": {information.BuildId},
+    ""leds"": {{
+      ""count"": {information.Leds.Count},
+      ""rgbw"": {information.Leds.Rgbw.ToString().ToLower()},
+      ""pin"": [{string.Join(",", information.Leds.Pin)}],
+      ""pwr"": {information.Leds.PowerUsage},
+      ""maxpwr"": {information.Leds.MaximumPower},
+      ""maxseg"": {information.Leds.MaximumSegments}
+    }},
+    ""name"": ""{information.Name}"",
+    ""udpport"": {information.UdpPort},
+    ""live"": {information.Live.ToString().ToLower()},
+    ""fxcount"": {information.EffectsCount},
+    ""palcount"": {information.PalettesCount},
+    ""arch"": ""{information.Arch}"",
+    ""core"": ""{information.Core}"",
+    ""freeheap"": {information.FreeHeapMemory},
+    ""uptime"": {information.UpTime},
+    ""opt"": {information.Opt},
+    ""brand"": ""{information.Brand}"",
+    ""product"": ""{information.Product}"",
+    ""btype"": ""{information.BuildType}"",
+    ""mac"": ""{information.MacAddress}""
+  }}";
         }
     }
 }

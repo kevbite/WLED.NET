@@ -14,7 +14,7 @@ namespace Kevsoft.WLED
         /// General information about the device. No value can be modified using this API.
         /// </summary>
         [JsonPropertyName("info")]
-        public Info Information { get; set; } = null!;
+        public Information Information { get; set; } = null!;
 
         /// <summary>
         /// An array of the effect mode names.

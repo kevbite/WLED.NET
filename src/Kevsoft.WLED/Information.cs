@@ -2,7 +2,7 @@
 
 namespace Kevsoft.WLED
 {
-    public class Info
+    public class Information
     {
         /// <summary>
         /// Version name.

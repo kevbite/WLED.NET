@@ -43,5 +43,16 @@ namespace Kevsoft.WLED
 
             return response;
         }
+
+        public async Task<Information> GetInformation()
+        {
+            var message = await _client.GetAsync("json/info");
+
+            message.EnsureSuccessStatusCode();
+
+            var response = await JsonSerializer.DeserializeAsync<Information>(await message.Content.ReadAsStreamAsync());
+
+            return response;
+        }
     }
 }
