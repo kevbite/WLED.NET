@@ -19,7 +19,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="../../icon.png" Pack="true" Visible="false" PackagePath=""/>
+    <None Include="../../icon.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="4.7.1" />
   </ItemGroup>
   
 </Project>

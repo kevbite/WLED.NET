@@ -4,6 +4,7 @@
         <Copyright>Copyright 2020 Kevsoft</Copyright>
         <Authors>Kevin Smith</Authors>
         <LangVersion>8</LangVersion>
+        <nullable>enable</nullable>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <NoWarn>CS1591;MSB4018</NoWarn>
