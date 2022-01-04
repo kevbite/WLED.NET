@@ -20,10 +20,10 @@ namespace Kevsoft.WLED
         public int Duration { get; set; }
 
         /// <summary>
-        /// If true, the light will gradually dim over the course of the nightlight duration. If false, it will instantly turn to the target brightness once the duration has elapsed.
+        /// Nightlight mode (0: instant, 1: fade, 2: color fade, 3: sunrise) (available since 0.10.2).
         /// </summary>
         [JsonPropertyName("fade")]
-        public bool Fade { get; set; }
+        public byte Mode { get; set; }
 
         /// <summary>
         /// Target brightness.
