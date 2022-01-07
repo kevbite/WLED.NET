@@ -20,7 +20,7 @@ namespace Kevsoft.WLED.Tests
 
         protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (_mockedResponses.TryGetValue(request.RequestUri.AbsoluteUri, out var body))
+            if (_mockedResponses.TryGetValue(request.RequestUri!.AbsoluteUri, out var body))
             {
                 return Task.FromResult(
                     new HttpResponseMessage(HttpStatusCode.OK)
