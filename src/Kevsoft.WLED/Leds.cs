@@ -11,16 +11,22 @@ namespace Kevsoft.WLED
         public int Count { get; set; }
 
         /// <summary>
+        /// Current frames per second. (available since 0.12.0)
+        /// </summary>
+        [JsonPropertyName("fps")]
+        public byte Fps { get; set; }
+
+        /// <summary>
         /// true if LEDs are 4-channel (RGBW).
         /// </summary>
         [JsonPropertyName("rgbw")]
         public bool Rgbw { get; set; }
 
         /// <summary>
-        /// LED strip pin(s)
+        /// true if a white channel slider should be displayed. (available since 0.10.0)
         /// </summary>
-        [JsonPropertyName("pin")]
-        public int[] Pin { get; set; } = null!;
+        [JsonPropertyName("wv")]
+        public bool DisplayWhiteSlider { get; set; }
 
         /// <summary>
         /// Current LED power usage in milliamps as determined by the ABL. 0 if ABL is disabled.

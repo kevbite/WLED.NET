@@ -14,13 +14,13 @@ namespace Kevsoft.WLED
         /// Brightness of the light. If On is false, contains last brightness when light was on (aka brightness when On is set to true).
         /// </summary>
         [JsonPropertyName("bri")]
-        public int Brightness { get; set; }
+        public byte Brightness { get; set; }
 
         /// <summary>
         /// Duration of the crossfade between different colors/brightness levels. One unit is 100ms, so a value of 4 results in a transition of 400ms.
         /// </summary>
         [JsonPropertyName("transition")]
-        public int Transition { get; set; }
+        public byte Transition { get; set; }
 
         /// <summary>
         /// ID of currently set preset.
@@ -45,6 +45,18 @@ namespace Kevsoft.WLED
         /// </summary>
         [JsonPropertyName("udpn")]
         public UdpPackets UdpPackets { get; set; } = null!;
+
+        /// <summary>
+        /// Live data override. 0 is off, 1 is override until live data ends, 2 is override until ESP reboot (available since 0.10.0)
+        /// </summary>
+        [JsonPropertyName("lor")]
+        public byte LiveDataOverride { get; set; }
+
+        /// <summary>
+        /// Main Segment
+        /// </summary>
+        [JsonPropertyName("mainseg")]
+        public int MainSegment { get; set; }
 
         /// <summary>
         /// Segments are individual parts of the LED strip.

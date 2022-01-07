@@ -14,13 +14,19 @@ namespace Kevsoft.WLED
         /// Build ID (YYMMDDB, B = daily build index).
         /// </summary>
         [JsonPropertyName("vid")]
-        public int BuildId { get; set; }
+        public uint BuildId { get; set; }
 
         /// <summary>
         /// LEDs Information
         /// </summary>
         [JsonPropertyName("leds")]
         public Leds Leds { get; set; } = null!;
+
+        /// <summary>
+        /// If true, an UI with only a single button for toggling sync should toggle receive+send, otherwise send only
+        /// </summary>
+        [JsonPropertyName("str")]
+        public bool ToggleSendReceive { get; set; }
 
         /// <summary>
         /// Friendly name of the light.
@@ -89,7 +95,7 @@ namespace Kevsoft.WLED
         public string Brand { get; set; } = null!;
 
         /// <summary>
-        /// The product name. Always DIY light for standard installations.
+        /// The product name. Always FOSS for standard installations.
         /// </summary>
         [JsonPropertyName("product")]
         public string Product { get; set; } = null!;
@@ -105,5 +111,11 @@ namespace Kevsoft.WLED
         /// </summary>
         [JsonPropertyName("mac")]
         public string MacAddress { get; set; } = null!;
+
+        /// <summary>
+        /// The IP address of this instance. Empty string if not connected. (since 0.13.0)
+        /// </summary>
+        [JsonPropertyName("ip")]
+        public string NetworkAddress { get; set; } = null!;
     }
 }

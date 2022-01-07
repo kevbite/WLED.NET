@@ -5,6 +5,12 @@ namespace Kevsoft.WLED
     public class Seg
     {
         /// <summary>
+        /// Zero-indexed ID of the segment. May be omitted, in that case the ID will be inferred from the order of the segment objects in the seg array. As such, not included in state response.
+        /// </summary>
+        [JsonPropertyName("id")]
+        public int Id { get; set; }
+
+        /// <summary>
         /// LED the segment starts at.
         /// </summary>
         [JsonPropertyName("start")]
@@ -21,6 +27,24 @@ namespace Kevsoft.WLED
         /// </summary>
         [JsonPropertyName("len")]
         public int Length { get; set; }
+
+        /// <summary>
+        /// Grouping (how many consecutive LEDs of the same segment will be grouped to the same color)
+        /// </summary>
+        [JsonPropertyName("grp")]
+        public int Group { get; set; }
+
+        /// <summary>
+        /// Spacing (how many LEDs are turned off and skipped between each group)
+        /// </summary>
+        [JsonPropertyName("spc")]
+        public int Spacing { get; set; }
+
+        /// <summary>
+        /// Offset (how many LEDs to rotate the virtual start of the segments, available since 0.13.0)
+        /// </summary>
+        [JsonPropertyName("of")]
+        public int Offset { get; set; }
 
         /// <summary>
         /// Array that has up to 3 color arrays as elements, the primary, secondary (background) and tertiary colors of the segment. Each color is an array of 3 or 4 bytes, which represent an RGB(W) color.
@@ -60,5 +84,23 @@ namespace Kevsoft.WLED
         /// </summary>
         [JsonPropertyName("rev")]
         public bool Reverse { get; set; }
+
+        /// <summary>
+        /// Turns on and off the individual segment. (available since 0.10.0)
+        /// </summary>
+        [JsonPropertyName("on")]
+        public bool SegmentState { get; set; }
+
+        /// <summary>
+        /// Sets the individual segment brightness (available since 0.10.0)
+        /// </summary>
+        [JsonPropertyName("bri")]
+        public int Brightness { get; set; }
+
+        /// <summary>
+        /// Mirrors the segment (available since 0.10.2)
+        /// </summary>
+        [JsonPropertyName("mi")]
+        public bool Mirror { get; set; }
     }
 }
