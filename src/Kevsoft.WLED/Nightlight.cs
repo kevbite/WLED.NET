@@ -22,7 +22,7 @@ namespace Kevsoft.WLED
         /// <summary>
         /// Nightlight mode (0: instant, 1: fade, 2: color fade, 3: sunrise) (available since 0.10.2).
         /// </summary>
-        [JsonPropertyName("fade")]
+        [JsonPropertyName("mode")]
         public byte Mode { get; set; }
 
         /// <summary>

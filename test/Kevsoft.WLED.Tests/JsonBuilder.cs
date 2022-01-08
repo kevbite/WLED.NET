@@ -28,9 +28,13 @@ namespace Kevsoft.WLED.Tests
                 ""seg"": [{String.Join(", ", state.Segments.Select(seg =>
                     {
                         return $@"{{
+                            ""id"": {seg.Id},
                             ""start"": {seg.Start},
                             ""stop"": {seg.Stop},
                             ""len"": {seg.Length},
+                            ""grp"": {seg.Group},
+                            ""spc"": {seg.Spacing},
+                            ""of"": {seg.Offset},
                             ""col"": [
                               {String.Join(", ", seg.Colors.Select(col => $"[{String.Join(",", col)}]"))}
                             ],
@@ -40,6 +44,8 @@ namespace Kevsoft.WLED.Tests
                             ""pal"": {seg.ColorPaletteId},
                             ""sel"": {seg.Selected.ToString().ToLower()},
                             ""rev"": {seg.Reverse.ToString().ToLower()},
+                            ""on"": {seg.SegmentState.ToString().ToLower()},
+                            ""bri"": {seg.Brightness},
                             ""cln"": -1
                             }}";
                     }))}]
@@ -53,8 +59,9 @@ namespace Kevsoft.WLED.Tests
                 ""vid"": {information.BuildId},
                 ""leds"": {{
                     ""count"": {information.Leds.Count},
+                    ""fps"": {information.Leds.Fps},
                     ""rgbw"": {information.Leds.Rgbw.ToString().ToLower()},
-                    ""wv"": [{String.Join(",", information.Leds.DisplayWhiteSlider)}],
+                    ""wv"": {information.Leds.DisplayWhiteSlider.ToString().ToLower()},
                     ""pwr"": {information.Leds.PowerUsage},
                     ""maxpwr"": {information.Leds.MaximumPower},
                     ""maxseg"": {information.Leds.MaximumSegments}
@@ -73,15 +80,16 @@ namespace Kevsoft.WLED.Tests
                 ""brand"": ""{information.Brand}"",
                 ""product"": ""{information.Product}"",
                 ""btype"": ""{information.BuildType}"",
-                ""mac"": ""{information.MacAddress}""
+                ""mac"": ""{information.MacAddress}"",
+                ""ip"": ""{information.NetworkAddress}""
                 }}";
         }
 
         public static string CreateRootResponse(WLedRootResponse expected)
         {
             return $@"{{
-                ""state"": {JsonBuilder.CreateStateJson(expected.State)},
-                ""info"": {JsonBuilder.CreateInformationJson(expected.Information)},
+                ""state"": {CreateStateJson(expected.State)},
+                ""info"": {CreateInformationJson(expected.Information)},
                 ""effects"": [
                     {String.Join(", ", expected.Effects.Select(x => $@"""{x}"""))}
                     ],
