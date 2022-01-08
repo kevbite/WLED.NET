@@ -1,13 +1,10 @@
-using System;
-using System.Linq;
+namespace Kevsoft.WLED.Tests;
 
-namespace Kevsoft.WLED.Tests
+public class JsonBuilder
 {
-    public class JsonBuilder
+    public static string CreateStateJson(StateResponse state)
     {
-        public static string CreateStateJson(State state)
-        {
-            return $@"{{
+        return $@"{{
                 ""on"": {state.On.ToString().ToLower()},
                 ""bri"": {state.Brightness},
                 ""transition"": {state.Transition},
@@ -26,8 +23,8 @@ namespace Kevsoft.WLED.Tests
                 ""lor"": {state.LiveDataOverride},
                 ""mainseg"": {state.MainSegment},
                 ""seg"": [{String.Join(", ", state.Segments.Select(seg =>
-                    {
-                        return $@"{{
+                {
+                    return $@"{{
                             ""id"": {seg.Id},
                             ""start"": {seg.Start},
                             ""stop"": {seg.Stop},
@@ -45,16 +42,15 @@ namespace Kevsoft.WLED.Tests
                             ""sel"": {seg.Selected.ToString().ToLower()},
                             ""rev"": {seg.Reverse.ToString().ToLower()},
                             ""on"": {seg.SegmentState.ToString().ToLower()},
-                            ""bri"": {seg.Brightness},
-                            ""cln"": -1
+                            ""bri"": {seg.Brightness}
                             }}";
-                    }))}]
+                }))}]
             }}";
-        }
+    }
 
-        public static string CreateInformationJson(Information information)
-        {
-            return $@"{{
+    public static string CreateInformationJson(InformationResponse information)
+    {
+        return $@"{{
                 ""ver"": ""{information.VersionName}"",
                 ""vid"": {information.BuildId},
                 ""leds"": {{
@@ -83,11 +79,11 @@ namespace Kevsoft.WLED.Tests
                 ""mac"": ""{information.MacAddress}"",
                 ""ip"": ""{information.NetworkAddress}""
                 }}";
-        }
+    }
 
-        public static string CreateRootResponse(WLedRootResponse expected)
-        {
-            return $@"{{
+    public static string CreateRootResponse(WLedRootResponse expected)
+    {
+        return $@"{{
                 ""state"": {CreateStateJson(expected.State)},
                 ""info"": {CreateInformationJson(expected.Information)},
                 ""effects"": [
@@ -97,6 +93,5 @@ namespace Kevsoft.WLED.Tests
                     {String.Join(", ", expected.Palettes.Select(x => $@"""{x}"""))}
                     ]
                 }}";
-        }
     }
 }

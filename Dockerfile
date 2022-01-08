@@ -1,6 +1,5 @@
 ARG VERSION=0.0.0
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS restore
-ARG VERSION
 WORKDIR /
 
 COPY ./nuget.config .
@@ -8,6 +7,7 @@ COPY ./*.sln .
 COPY ./Directory.Build.props .
 COPY ./src/Kevsoft.WLED/*.csproj ./src/Kevsoft.WLED/
 COPY ./test/Kevsoft.WLED.Tests/*.csproj ./test/Kevsoft.WLED.Tests/
+COPY ./samples/BasicConsole/*.csproj ./samples/BasicConsole/ 
 RUN dotnet restore
 
 FROM restore as build

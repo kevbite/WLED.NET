@@ -1,35 +1,39 @@
-using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Kevsoft.WLED.Tests
+namespace Kevsoft.WLED.Tests;
+
+public class MockHttpMessageHandler : HttpMessageHandler
 {
-    public class MockHttpMessageHandler : HttpMessageHandler
+    private readonly Dictionary<string, (HttpStatusCode statusCode, string? body)> _mockedResponses = new(StringComparer.InvariantCultureIgnoreCase);
+
+    private readonly Dictionary<string, string?> _capturedRequests = new(StringComparer.InvariantCultureIgnoreCase);
+
+    public Dictionary<string, string?> CapturedRequests => _capturedRequests;
+
+    public void AppendResponse(string uri, string body)
     {
-        private readonly Dictionary<string, string> _mockedResponses
-            = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+        _mockedResponses.Add(uri, (HttpStatusCode.OK, body));
+    }
+    
+    public void AppendResponse(string uri)
+    {
+        _mockedResponses.Add(uri, (HttpStatusCode.OK, null));
+    }
 
-        public void AppendResponse(string uri, string body)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
+        CancellationToken cancellationToken)
+    {
+        CapturedRequests.Add(request.RequestUri!.AbsoluteUri,
+            await (request.Content?.ReadAsStringAsync(cancellationToken) ?? Task.FromResult("")));
+        
+        if (_mockedResponses.TryGetValue(request.RequestUri!.AbsoluteUri, out var value))
         {
-            _mockedResponses.Add(uri, body);
-        }
-
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            if (_mockedResponses.TryGetValue(request.RequestUri!.AbsoluteUri, out var body))
+            return new HttpResponseMessage(value.statusCode)
             {
-                return Task.FromResult(
-                    new HttpResponseMessage(HttpStatusCode.OK)
-                    {
-                        Content = new StringContent(body, Encoding.UTF8, "application/json")
-                    });
-            }
-            
-            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.NotFound));
+                Content = new StringContent(value.body ?? string.Empty, Encoding.UTF8, "application/json")
+            };
         }
+
+        return new HttpResponseMessage(HttpStatusCode.NotFound);
     }
 }
