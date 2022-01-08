@@ -3,11 +3,19 @@
         <Product>WLED.NET</Product>
         <Copyright>Copyright 2020 Kevsoft</Copyright>
         <Authors>Kevin Smith</Authors>
-        <LangVersion>8</LangVersion>
+        <LangVersion>latest</LangVersion>
         <nullable>enable</nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
         <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
         <NoWarn>CS1591;MSB4018</NoWarn>
         <DebugSymbols>True</DebugSymbols>
     </PropertyGroup>
+
+    <ItemGroup>
+        <Using Include="System.Text" />
+        <Using Include="System.Text.Json" />
+        <Using Include="System.Net.Http.Json" />
+        <Using Include="System.Text.Json.Serialization" />
+    </ItemGroup>
 </Project>
