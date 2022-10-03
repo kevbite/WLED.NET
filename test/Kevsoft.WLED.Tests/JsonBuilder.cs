@@ -56,8 +56,7 @@ public class JsonBuilder
                 ""leds"": {{
                     ""count"": {information.Leds.Count},
                     ""fps"": {information.Leds.Fps},
-                    ""rgbw"": {information.Leds.Rgbw.ToString().ToLower()},
-                    ""wv"": {information.Leds.DisplayWhiteSlider.ToString().ToLower()},
+                    ""lc"": {information.Leds.LightCapabilities},
                     ""pwr"": {information.Leds.PowerUsage},
                     ""maxpwr"": {information.Leds.MaximumPower},
                     ""maxseg"": {information.Leds.MaximumSegments}
