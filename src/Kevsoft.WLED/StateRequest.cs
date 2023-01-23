@@ -51,7 +51,14 @@ public sealed class StateRequest
     [JsonPropertyName("seg")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public SegmentRequest[]? Segments { get; set; } = null!;
-        
+
+    /// <summary>
+    /// Timebase for effects.
+    /// </summary>
+    [JsonPropertyName("tb")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Timebase { get; set; }
+
     public static StateRequest From(StateResponse stateResponse)
     {
         return new StateRequest()
