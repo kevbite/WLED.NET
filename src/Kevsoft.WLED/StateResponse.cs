@@ -61,4 +61,11 @@ public sealed class StateResponse
     /// </summary>
     [JsonPropertyName("seg")]
     public SegmentResponse[] Segments { get; set; } = null!;
+    
+    /// <summary>
+    /// Timebase for effects.
+    /// </summary>
+    [JsonPropertyName("tb")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Timebase { get; set; }
 }

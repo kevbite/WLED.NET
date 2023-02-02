@@ -72,7 +72,8 @@ public sealed class StateRequest
             UdpPackets = stateResponse.UdpPackets,
             LiveDataOverride = stateResponse.LiveDataOverride,
             MainSegment = stateResponse.MainSegment,
-            Segments = stateResponse.Segments.Select(SegmentRequest.From).ToArray()
+            Segments = stateResponse.Segments.Select(SegmentRequest.From).ToArray(),
+            Timebase = stateResponse.Timebase
         };
     }
         
