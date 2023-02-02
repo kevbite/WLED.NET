@@ -44,7 +44,8 @@ public class JsonBuilder
                             ""on"": {seg.SegmentState.ToString().ToLower()},
                             ""bri"": {seg.Brightness}
                             }}";
-                }))}]
+                }))}],
+                ""tb"": {state.Timebase}
             }}";
     }
 

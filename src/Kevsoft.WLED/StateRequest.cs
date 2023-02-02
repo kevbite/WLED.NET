@@ -51,7 +51,14 @@ public sealed class StateRequest
     [JsonPropertyName("seg")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public SegmentRequest[]? Segments { get; set; } = null!;
-        
+
+    /// <summary>
+    /// Timebase for effects.
+    /// </summary>
+    [JsonPropertyName("tb")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Timebase { get; set; }
+
     public static StateRequest From(StateResponse stateResponse)
     {
         return new StateRequest()
@@ -65,7 +72,8 @@ public sealed class StateRequest
             UdpPackets = stateResponse.UdpPackets,
             LiveDataOverride = stateResponse.LiveDataOverride,
             MainSegment = stateResponse.MainSegment,
-            Segments = stateResponse.Segments.Select(SegmentRequest.From).ToArray()
+            Segments = stateResponse.Segments.Select(SegmentRequest.From).ToArray(),
+            Timebase = stateResponse.Timebase
         };
     }
         
