@@ -61,7 +61,7 @@ public sealed class WLedClient
         var message = await _client.GetAsync("json/pal");
 
         message.EnsureSuccessStatusCode();
-            
+
         return (await message.Content.ReadFromJsonAsync<string[]>())!;
     }
 
@@ -73,7 +73,7 @@ public sealed class WLedClient
         var result = await _client.PostAsync("/json", content);
         result.EnsureSuccessStatusCode();
     }
-        
+
     public async Task Post(StateRequest request)
     {
         var stateString = JsonSerializer.Serialize(request);
@@ -81,5 +81,28 @@ public sealed class WLedClient
         using var content = new StringContentWithoutCharset(stateString, "application/json");
         var result = await _client.PostAsync("/json/state", content);
         result.EnsureSuccessStatusCode();
+    }
+
+    public async Task Post(List<SingleLed> ledList)
+    {
+        // Eliminate duplicate positions
+        ledList = ledList.GroupBy(x => x.LedPosition).Select(x => x.Last()).ToList();
+
+        List<object> list = [];
+        int counter = 0;
+
+        foreach (SingleLed led in ledList)
+        {
+            if (counter > 255)
+            {
+                await Post(new StateRequest { Segments = [new() { Id = 0, IndividualLedControl = [.. list] }] });
+                list = [];
+                counter = 0;
+            }
+            list.Add(led.LedPosition);
+            list.Add(led.Color);
+            counter++;
+        }
+        await Post(new StateRequest { Segments = [new() { Id = 0, IndividualLedControl = [.. list] }] });
     }
 }

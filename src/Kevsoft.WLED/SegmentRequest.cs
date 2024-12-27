@@ -87,6 +87,9 @@ public sealed class SegmentRequest
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Mirror { get; set; }
 
+    [JsonPropertyName("i")]
+    public object[] IndividualLedControl { get; set; } = [];
+
 
     public static SegmentRequest From(SegmentResponse segmentResponse)
     {
