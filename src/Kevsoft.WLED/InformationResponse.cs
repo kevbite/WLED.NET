@@ -6,7 +6,7 @@ public sealed class InformationResponse
     /// Version name.
     /// </summary>
     [JsonPropertyName("ver")]
-    public string VersionName { get; set; } = null!;
+    public string? VersionName { get; set; } = null;
 
     /// <summary>
     /// Build ID (YYMMDDB, B = daily build index).
@@ -18,7 +18,7 @@ public sealed class InformationResponse
     /// LEDs Information
     /// </summary>
     [JsonPropertyName("leds")]
-    public LedsResponse Leds { get; set; } = null!;
+    public LedsResponse? Leds { get; set; } = null;
 
     /// <summary>
     /// If true, an UI with only a single button for toggling sync should toggle receive+send, otherwise send only
@@ -30,7 +30,7 @@ public sealed class InformationResponse
     /// Friendly name of the light.
     /// </summary>
     [JsonPropertyName("name")]
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; } = null;
 
     /// <summary>
     /// The UDP port for realtime packets and WLED broadcast.
@@ -60,13 +60,13 @@ public sealed class InformationResponse
     /// Name of the platform.
     /// </summary>
     [JsonPropertyName("arch")]
-    public string Arch { get; set; } = null!;
+    public string? Arch { get; set; } = null;
 
     /// <summary>
     /// Version of the underlying (Arduino core) SDK.
     /// </summary>
     [JsonPropertyName("core")]
-    public string Core { get; set; } = null!;
+    public string? Core { get; set; } = null;
 
     /// <summary>
     /// Bytes of heap memory (RAM) currently available. Problematic if less than 10k.
@@ -90,29 +90,29 @@ public sealed class InformationResponse
     /// The producer/vendor of the light. Always WLED for standard installations.
     /// </summary>
     [JsonPropertyName("brand")]
-    public string Brand { get; set; } = null!;
+    public string? Brand { get; set; } = null;
 
     /// <summary>
     /// The product name. Always FOSS for standard installations.
     /// </summary>
     [JsonPropertyName("product")]
-    public string Product { get; set; } = null!;
+    public string? Product { get; set; } = null;
 
     /// <summary>
     /// The origin of the build. src if a release version is compiled from source, bin for an official release image, dev for a development build (regardless of src/bin origin) and exp for experimental versions. ogn if the image is flashed to hardware by the vendor.
     /// </summary>
     [JsonPropertyName("btype")]
-    public string BuildType { get; set; } = null!;
+    public string? BuildType { get; set; } = null;
 
     /// <summary>
     /// The hexadecimal hardware MAC address of the light, lowercase and without colons.
     /// </summary>
     [JsonPropertyName("mac")]
-    public string MacAddress { get; set; } = null!;
+    public string? MacAddress { get; set; } = null;
 
     /// <summary>
     /// The IP address of this instance. Empty string if not connected. (since 0.13.0)
     /// </summary>
     [JsonPropertyName("ip")]
-    public string NetworkAddress { get; set; } = null!;
+    public string? NetworkAddress { get; set; } = null;
 }

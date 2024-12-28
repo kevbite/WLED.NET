@@ -1,6 +1,6 @@
 ﻿namespace Kevsoft.WLED;
 
-public sealed class SingleLed
+public sealed class SingleLedRequest
 {
     /// <summary> The position of the LED in the segment </summary>
     public int LedPosition { get; set; }

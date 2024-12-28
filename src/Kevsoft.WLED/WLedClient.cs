@@ -83,7 +83,7 @@ public sealed class WLedClient
         result.EnsureSuccessStatusCode();
     }
 
-    public async Task Post(List<SingleLed> ledList)
+    public async Task Post(List<SingleLedRequest> ledList)
     {
         // Eliminate duplicate positions
         ledList = ledList.GroupBy(x => x.LedPosition).Select(x => x.Last()).ToList();
@@ -92,7 +92,7 @@ public sealed class WLedClient
         int counter = 0;
 
         //Attempt to group colors together to reduce the number of packets sent as there is a 256 color at a time limit
-        foreach (IGrouping<string, SingleLed>? leds in ledList.GroupBy(x => x.Color))
+        foreach (IGrouping<string, SingleLedRequest>? leds in ledList.GroupBy(x => x.Color))
         {
             if (counter >=255)
             {
