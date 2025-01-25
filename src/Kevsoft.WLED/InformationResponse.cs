@@ -6,7 +6,7 @@ public sealed class InformationResponse
     /// Version name.
     /// </summary>
     [JsonPropertyName("ver")]
-    public string? VersionName { get; set; } = null;
+    public string VersionName { get; set; } = null!;
 
     /// <summary>
     /// Build ID (YYMMDDB, B = daily build index).
