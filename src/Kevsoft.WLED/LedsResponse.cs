@@ -48,5 +48,5 @@ public sealed class LedsResponse
     /// Matrix configuration
     /// </summary>
     [JsonPropertyName("matrix")]
-    public MatrixResponse? Matrix { get; set; } = null;
+    public MatrixResponse Matrix { get; set; } = null!;
 }
