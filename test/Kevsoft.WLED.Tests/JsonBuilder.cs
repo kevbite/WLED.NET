@@ -41,6 +41,7 @@ public class JsonBuilder
                             ""pal"": {seg.ColorPaletteId},
                             ""sel"": {seg.Selected.ToString().ToLower()},
                             ""rev"": {seg.Reverse.ToString().ToLower()},
+                            ""frz"": {seg.Freeze.ToString().ToLower()},
                             ""on"": {seg.SegmentState.ToString().ToLower()},
                             ""bri"": {seg.Brightness}
                             }}";
