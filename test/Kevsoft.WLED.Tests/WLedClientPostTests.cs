@@ -39,6 +39,29 @@ public class WLedClientPostTests
     }
 
     [Fact]
+    public async Task PostEmptySingleLedRequestData()
+    {
+        var mockHttpMessageHandler = new MockHttpMessageHandler();
+        var baseUri = $"http://{Guid.NewGuid():N}.com";
+        mockHttpMessageHandler.AppendResponse($"{baseUri}/json/state");
+        var client = new WLedClient(mockHttpMessageHandler, baseUri);
+
+        List<SingleLedRequest> request = [];
+        await client.Post(request);
+
+        var (uri, body) = mockHttpMessageHandler.CapturedRequests.Single();
+        uri.Should().Be($"{baseUri}/json/state");
+        var json = JsonDocument.Parse(body!);
+        // Expected Request:
+        // {"on":true,"seg":[{"id":0,"i":[]}]}
+
+        json.RootElement.EnumerateObject().Should().HaveCount(2);
+        json.RootElement.GetProperty("seg").EnumerateArray().Should().HaveCount(1);
+        json.RootElement.GetProperty("seg")[0].GetProperty("id").GetInt32().Should().Be(0);
+        json.RootElement.GetProperty("seg")[0].GetProperty("i").EnumerateArray().Should().HaveCount(0);
+    }
+
+    [Fact]
     public async Task PostFullWLedRootResponse()
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
