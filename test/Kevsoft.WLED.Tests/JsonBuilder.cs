@@ -43,7 +43,8 @@ public class JsonBuilder
                             ""rev"": {seg.Reverse.ToString().ToLower()},
                             ""frz"": {seg.Freeze.ToString().ToLower()},
                             ""on"": {seg.SegmentState.ToString().ToLower()},
-                            ""bri"": {seg.Brightness}
+                            ""bri"": {seg.Brightness},
+                            ""mi"": {seg.Mirror.ToString().ToLower()}
                             }}";
                 }))}],
                 ""tb"": {state.Timebase}
