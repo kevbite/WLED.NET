@@ -60,8 +60,13 @@ public class JsonBuilder
                     ""lc"": {information.Leds.LightCapabilities},
                     ""pwr"": {information.Leds.PowerUsage},
                     ""maxpwr"": {information.Leds.MaximumPower},
-                    ""maxseg"": {information.Leds.MaximumSegments}
-                    }},
+                    ""maxseg"": {information.Leds.MaximumSegments},
+                    ""bootps"": {information.Leds.BootupPreset},
+                    ""matrix"": {{
+                        ""w"": {information.Leds.Matrix.Width},
+                        ""h"": {information.Leds.Matrix.Height}
+                    }}
+                }},
                 ""str"": {information.ToggleSendReceive.ToString().ToLower()},
                 ""name"": ""{information.Name}"",
                 ""udpport"": {information.UdpPort},

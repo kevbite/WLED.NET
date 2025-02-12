@@ -37,4 +37,16 @@ public sealed class LedsResponse
     /// </summary>
     [JsonPropertyName("maxseg")]
     public byte MaximumSegments { get; set; }
+
+    /// <summary>
+    /// Preset number loaded on boot.
+    /// </summary>
+    [JsonPropertyName("bootps")]
+    public int BootupPreset { get; set; }
+
+    /// <summary>
+    /// Matrix configuration
+    /// </summary>
+    [JsonPropertyName("matrix")]
+    public MatrixResponse Matrix { get; set; } = null!;
 }
