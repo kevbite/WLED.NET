@@ -84,6 +84,12 @@ public sealed class SegmentResponse
     public bool Reverse { get; set; }
 
     /// <summary>
+    /// freezes/unfreezes the current effect
+    /// </summary>
+    [JsonPropertyName("frz")]
+    public bool Freeze { get; set; }
+
+    /// <summary>
     /// Turns on and off the individual segment. (available since 0.10.0)
     /// </summary>
     [JsonPropertyName("on")]

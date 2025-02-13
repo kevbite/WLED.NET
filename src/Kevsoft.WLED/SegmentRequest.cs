@@ -72,6 +72,11 @@ public sealed class SegmentRequest
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Reverse { get; set; }
 
+    /// <inheritdoc cref="SegmentResponse.Freeze"/>
+    [JsonPropertyName("frz")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Freeze { get; set; }
+
     /// <inheritdoc cref="SegmentResponse.SegmentState"/>
     [JsonPropertyName("on")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -86,7 +91,6 @@ public sealed class SegmentRequest
     [JsonPropertyName("mi")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Mirror { get; set; }
-
 
     public static SegmentRequest From(SegmentResponse segmentResponse)
     {
@@ -106,6 +110,7 @@ public sealed class SegmentRequest
             ColorPaletteId = segmentResponse.ColorPaletteId,
             Selected = segmentResponse.Selected,
             Reverse = segmentResponse.Reverse,
+            Freeze = segmentResponse.Freeze,
             SegmentState = segmentResponse.SegmentState,
             Brightness = segmentResponse.Brightness,
             Mirror = segmentResponse.Mirror
