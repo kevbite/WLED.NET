@@ -1,6 +1,6 @@
 ﻿namespace Kevsoft.WLED;
 
-public sealed class WLedClient
+public sealed class WLedClient : IWLedClient
 {
     private readonly HttpClient _client;
 
