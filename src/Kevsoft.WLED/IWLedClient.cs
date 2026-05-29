@@ -76,4 +76,14 @@ public interface IWLedClient
     /// Saves a playlist to the given preset slot.
     /// </summary>
     Task SavePlaylist(int id, PlaylistDefinition playlist, SavePresetOptions? options = null);
+
+    /// <summary>
+    /// Sets individual LEDs within a segment.
+    /// </summary>
+    /// <remarks>
+    /// Setting LEDs freezes the segment, so brightness and power must be set in an earlier request.
+    /// Large sets are transparently split into multiple sequential requests (never parallel), each
+    /// carrying at most <paramref name="maxColorsPerRequest"/> colours.
+    /// </remarks>
+    Task SetIndividualLeds(int segmentId, Action<IndividualLedBuilder> build, int maxColorsPerRequest = 256);
 }

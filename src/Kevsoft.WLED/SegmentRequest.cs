@@ -182,6 +182,11 @@ public sealed class SegmentRequest
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? RepeatToFill { get; set; }
 
+    /// <summary>Write-only: individual LED assignments. Build through <see cref="IndividualLedBuilder"/>.</summary>
+    [JsonPropertyName("i")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IndividualLedData? IndividualLeds { get; set; }
+
     public static SegmentRequest From(SegmentResponse segmentResponse)
     {
         return new SegmentRequest

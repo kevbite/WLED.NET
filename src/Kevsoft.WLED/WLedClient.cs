@@ -214,4 +214,26 @@ public sealed class WLedClient : IWLedClient
             Playlist = PlaylistRequest.From(playlist)
         });
     }
+
+    public async Task SetIndividualLeds(int segmentId, Action<IndividualLedBuilder> build, int maxColorsPerRequest = 256)
+    {
+        if (build is null)
+        {
+            throw new ArgumentNullException(nameof(build));
+        }
+
+        var builder = new IndividualLedBuilder();
+        build(builder);
+
+        foreach (var request in builder.Build(maxColorsPerRequest))
+        {
+            await Post(new StateRequest
+            {
+                Segments = new[]
+                {
+                    new SegmentRequest { Id = segmentId, IndividualLeds = request }
+                }
+            });
+        }
+    }
 }
