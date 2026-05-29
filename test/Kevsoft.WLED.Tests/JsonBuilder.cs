@@ -79,7 +79,11 @@ public class JsonBuilder
                 ""leds"": {{
                     ""count"": {information.Leds.Count},
                     ""fps"": {information.Leds.Fps},
-                    ""lc"": {information.Leds.LightCapabilities},
+                    ""lc"": {(byte)information.Leds.LightCapabilities},
+                    ""seglc"": [{String.Join(",", information.Leds.SegmentLightCapabilities.Select(x => (byte)x))}],
+                    ""rgbw"": {information.Leds.Rgbw.ToString().ToLower()},
+                    ""wv"": {information.Leds.WhiteValueSlider.ToString().ToLower()},
+                    ""cct"": {information.Leds.SupportsColorTemperature.ToString().ToLower()},
                     ""pwr"": {information.Leds.PowerUsage},
                     ""maxpwr"": {information.Leds.MaximumPower},
                     ""maxseg"": {information.Leds.MaximumSegments}
@@ -90,6 +94,20 @@ public class JsonBuilder
                 ""live"": {information.Live.ToString().ToLower()},
                 ""fxcount"": {information.EffectsCount},
                 ""palcount"": {information.PalettesCount},
+                ""lm"": ""{information.LiveMode}"",
+                ""lip"": ""{information.LiveIp}"",
+                ""ws"": {information.WebSocketClients ?? -1},
+                ""wifi"": {{
+                    ""bssid"": ""{information.Wifi.Bssid}"",
+                    ""signal"": {information.Wifi.Signal},
+                    ""channel"": {information.Wifi.Channel}
+                    }},
+                ""fs"": {{
+                    ""u"": {information.Filesystem.Used},
+                    ""t"": {information.Filesystem.Total},
+                    ""pmt"": {information.Filesystem.PresetsModifiedTimestamp}
+                    }},
+                ""ndc"": {information.DiscoveredDevices ?? -1},
                 ""arch"": ""{information.Arch}"",
                 ""core"": ""{information.Core}"",
                 ""freeheap"": {information.FreeHeapMemory},

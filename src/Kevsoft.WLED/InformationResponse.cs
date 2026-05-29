@@ -57,6 +57,44 @@ public sealed class InformationResponse
     public ushort PalettesCount { get; set; }
 
     /// <summary>
+    /// Info about the realtime data source.
+    /// </summary>
+    [JsonPropertyName("lm")]
+    public string LiveMode { get; set; } = null!;
+
+    /// <summary>
+    /// Realtime data source IP address.
+    /// </summary>
+    [JsonPropertyName("lip")]
+    public string LiveIp { get; set; } = null!;
+
+    /// <summary>
+    /// Number of currently connected WebSocket clients, or <c>null</c> if WebSockets are unsupported in this build.
+    /// </summary>
+    [JsonPropertyName("ws")]
+    [JsonConverter(typeof(NullableSentinelInt32JsonConverter))]
+    public int? WebSocketClients { get; set; }
+
+    /// <summary>
+    /// Info about the current Wi-Fi signal strength.
+    /// </summary>
+    [JsonPropertyName("wifi")]
+    public WifiResponse Wifi { get; set; } = null!;
+
+    /// <summary>
+    /// Info about the embedded LittleFS filesystem.
+    /// </summary>
+    [JsonPropertyName("fs")]
+    public FilesystemResponse Filesystem { get; set; } = null!;
+
+    /// <summary>
+    /// Number of other WLED devices discovered on the network, or <c>null</c> if node discovery is disabled.
+    /// </summary>
+    [JsonPropertyName("ndc")]
+    [JsonConverter(typeof(NullableSentinelInt32JsonConverter))]
+    public int? DiscoveredDevices { get; set; }
+
+    /// <summary>
     /// Name of the platform.
     /// </summary>
     [JsonPropertyName("arch")]

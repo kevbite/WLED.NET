@@ -47,6 +47,44 @@ public sealed class WLedClient : IWLedClient
         return (await message.Content.ReadFromJsonAsync<InformationResponse>())!;
     }
 
+    public async Task<StateInfoResponse> GetStateInfo()
+    {
+        var message = await _client.GetAsync("json/si");
+
+        message.EnsureSuccessStatusCode();
+
+        return (await message.Content.ReadFromJsonAsync<StateInfoResponse>())!;
+    }
+
+    public async Task<NetworkResponse[]> GetNetworks()
+    {
+        var message = await _client.GetAsync("json/net");
+
+        message.EnsureSuccessStatusCode();
+
+        var response = await message.Content.ReadFromJsonAsync<NetworksResponse>();
+        return response?.Networks ?? Array.Empty<NetworkResponse>();
+    }
+
+    public async Task<LiveResponse?> GetLiveColors()
+    {
+        var message = await _client.GetAsync("json/live");
+
+        if (message.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        message.EnsureSuccessStatusCode();
+
+        if (message.Content.Headers.ContentLength == 0)
+        {
+            return null;
+        }
+
+        return await message.Content.ReadFromJsonAsync<LiveResponse>();
+    }
+
     public async Task<string[]> GetEffects()
     {
         var message = await _client.GetAsync("json/eff");

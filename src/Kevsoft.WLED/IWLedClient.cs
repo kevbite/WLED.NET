@@ -8,6 +8,22 @@ public interface IWLedClient
 
     Task<InformationResponse> GetInformation();
 
+    /// <summary>
+    /// Gets the lighter <c>/json/si</c> response, containing only the state and info objects.
+    /// </summary>
+    Task<StateInfoResponse> GetStateInfo();
+
+    /// <summary>
+    /// Gets the nearby Wi-Fi networks reported by <c>/json/net</c>.
+    /// </summary>
+    Task<NetworkResponse[]> GetNetworks();
+
+    /// <summary>
+    /// Gets the live LED colour stream from <c>/json/live</c>, or <c>null</c> if the firmware
+    /// was not built with JSON-live support.
+    /// </summary>
+    Task<LiveResponse?> GetLiveColors();
+
     Task<string[]> GetEffects();
 
     Task<string[]> GetPalettes();
