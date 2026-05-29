@@ -161,4 +161,57 @@ public sealed class WLedClient : IWLedClient
     }
 
     public Task DeletePreset(int id) => Post(new StateRequest { DeletePresetSlot = id });
+
+    public async Task<IReadOnlyDictionary<int, Playlist>> GetPlaylists()
+    {
+        var message = await _client.GetAsync("presets.json");
+
+        message.EnsureSuccessStatusCode();
+
+        var json = await message.Content.ReadAsStringAsync();
+        return PlaylistsParser.ParsePlaylists(json);
+    }
+
+    public Task StartPlaylist(PlaylistDefinition playlist)
+    {
+        if (playlist is null)
+        {
+            throw new ArgumentNullException(nameof(playlist));
+        }
+
+        return Post(new StateRequest { Playlist = PlaylistRequest.From(playlist) });
+    }
+
+    public Task StartPlaylist(Action<PlaylistBuilder> configure)
+    {
+        if (configure is null)
+        {
+            throw new ArgumentNullException(nameof(configure));
+        }
+
+        var builder = new PlaylistBuilder();
+        configure(builder);
+        return StartPlaylist(builder.Build());
+    }
+
+    public Task SavePlaylist(int id, PlaylistDefinition playlist, SavePresetOptions? options = null)
+    {
+        if (playlist is null)
+        {
+            throw new ArgumentNullException(nameof(playlist));
+        }
+
+        options ??= new SavePresetOptions();
+
+        return Post(new StateRequest
+        {
+            SavePresetSlot = id,
+            PresetName = options.Name,
+            QuickLabel = options.QuickLabel,
+            SaveSegmentBounds = options.SaveSegmentBounds,
+            IncludeBrightness = options.IncludeBrightness,
+            SaveSelectedSegments = options.SaveSelectedSegments,
+            Playlist = PlaylistRequest.From(playlist)
+        });
+    }
 }

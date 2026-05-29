@@ -56,4 +56,24 @@ public interface IWLedClient
     /// Deletes the preset in the given slot.
     /// </summary>
     Task DeletePreset(int id);
+
+    /// <summary>
+    /// Gets the saved playlists, keyed by slot id.
+    /// </summary>
+    Task<IReadOnlyDictionary<int, Playlist>> GetPlaylists();
+
+    /// <summary>
+    /// Starts the given playlist immediately.
+    /// </summary>
+    Task StartPlaylist(PlaylistDefinition playlist);
+
+    /// <summary>
+    /// Builds and starts a playlist using a fluent builder.
+    /// </summary>
+    Task StartPlaylist(Action<PlaylistBuilder> configure);
+
+    /// <summary>
+    /// Saves a playlist to the given preset slot.
+    /// </summary>
+    Task SavePlaylist(int id, PlaylistDefinition playlist, SavePresetOptions? options = null);
 }

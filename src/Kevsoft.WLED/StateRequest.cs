@@ -151,6 +151,13 @@ public sealed class StateRequest
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? SaveSelectedSegments { get; set; }
 
+    /// <summary>
+    /// Start a playlist (the <c>playlist</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("playlist")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public PlaylistRequest? Playlist { get; set; }
+
     public static StateRequest From(StateResponse stateResponse)
     {
         return new StateRequest()
