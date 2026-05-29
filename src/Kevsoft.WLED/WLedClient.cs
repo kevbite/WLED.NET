@@ -132,4 +132,33 @@ public sealed class WLedClient : IWLedClient
         configure(update);
         return Post(update.Build());
     }
+
+    public async Task<IReadOnlyDictionary<int, Preset>> GetPresets()
+    {
+        var message = await _client.GetAsync("presets.json");
+
+        message.EnsureSuccessStatusCode();
+
+        var json = await message.Content.ReadAsStringAsync();
+        return PresetsParser.ParsePresets(json, new JsonSerializerOptions());
+    }
+
+    public Task ApplyPreset(PresetSelector preset) => Post(new StateRequest { PresetId = preset });
+
+    public Task SavePreset(int id, SavePresetOptions? options = null)
+    {
+        options ??= new SavePresetOptions();
+
+        return Post(new StateRequest
+        {
+            SavePresetSlot = id,
+            PresetName = options.Name,
+            QuickLabel = options.QuickLabel,
+            SaveSegmentBounds = options.SaveSegmentBounds,
+            IncludeBrightness = options.IncludeBrightness,
+            SaveSelectedSegments = options.SaveSelectedSegments
+        });
+    }
+
+    public Task DeletePreset(int id) => Post(new StateRequest { DeletePresetSlot = id });
 }

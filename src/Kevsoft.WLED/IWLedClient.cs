@@ -36,4 +36,24 @@ public interface IWLedClient
     /// Builds and posts a sparse state update using a fluent builder.
     /// </summary>
     Task UpdateState(Action<StateUpdate> configure);
+
+    /// <summary>
+    /// Gets the saved presets, keyed by slot id. Playlists and the scratch slot are excluded.
+    /// </summary>
+    Task<IReadOnlyDictionary<int, Preset>> GetPresets();
+
+    /// <summary>
+    /// Applies a preset by id, or cycles/randomises between presets.
+    /// </summary>
+    Task ApplyPreset(PresetSelector preset);
+
+    /// <summary>
+    /// Saves the device's current live state to the given preset slot.
+    /// </summary>
+    Task SavePreset(int id, SavePresetOptions? options = null);
+
+    /// <summary>
+    /// Deletes the preset in the given slot.
+    /// </summary>
+    Task DeletePreset(int id);
 }

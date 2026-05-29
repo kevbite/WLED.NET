@@ -102,6 +102,55 @@ public sealed class StateRequest
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? NextPreset { get; set; }
 
+    /// <summary>
+    /// Save the current state to this preset slot (the <c>psave</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("psave")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? SavePresetSlot { get; set; }
+
+    /// <summary>
+    /// Delete the preset in this slot (the <c>pdel</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("pdel")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? DeletePresetSlot { get; set; }
+
+    /// <summary>
+    /// Name for a preset being saved (the <c>n</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("n")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? PresetName { get; set; }
+
+    /// <summary>
+    /// Quick-load label for a preset being saved (the <c>ql</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("ql")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? QuickLabel { get; set; }
+
+    /// <summary>
+    /// Save segment bounds with the preset (the <c>sb</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("sb")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? SaveSegmentBounds { get; set; }
+
+    /// <summary>
+    /// Include brightness in the saved preset (the <c>ib</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("ib")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? IncludeBrightness { get; set; }
+
+    /// <summary>
+    /// Save which segments are selected with the preset (the <c>sc</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("sc")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? SaveSelectedSegments { get; set; }
+
     public static StateRequest From(StateResponse stateResponse)
     {
         return new StateRequest()
