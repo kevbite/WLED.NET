@@ -1,5 +1,5 @@
 ARG VERSION=0.0.0
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS restore
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS restore
 WORKDIR /
 
 COPY ./nuget.config .
