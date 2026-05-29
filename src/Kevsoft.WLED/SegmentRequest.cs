@@ -45,7 +45,7 @@ public sealed class SegmentRequest
     /// <inheritdoc cref="SegmentResponse.EffectId"/>
     [JsonPropertyName("fx")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? EffectId { get; set; }
+    public Selector? EffectId { get; set; }
 
     /// <inheritdoc cref="SegmentResponse.EffectSpeed"/>
     [JsonPropertyName("sx")]
@@ -60,7 +60,7 @@ public sealed class SegmentRequest
     /// <inheritdoc cref="SegmentResponse.ColorPaletteId"/>
     [JsonPropertyName("pal")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? ColorPaletteId { get; set; }
+    public Selector? ColorPaletteId { get; set; }
 
     /// <inheritdoc cref="SegmentResponse.Selected"/>
     [JsonPropertyName("sel")]
@@ -75,12 +75,12 @@ public sealed class SegmentRequest
     /// <inheritdoc cref="SegmentResponse.Freeze"/>
     [JsonPropertyName("frz")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public bool? Freeze { get; set; }
+    public Toggleable? Freeze { get; set; }
 
     /// <inheritdoc cref="SegmentResponse.SegmentState"/>
     [JsonPropertyName("on")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public bool? SegmentState { get; set; }
+    public Toggleable? SegmentState { get; set; }
 
     /// <inheritdoc cref="SegmentResponse.Brightness"/>
     [JsonPropertyName("bri")]

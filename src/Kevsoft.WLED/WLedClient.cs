@@ -82,4 +82,16 @@ public sealed class WLedClient : IWLedClient
         var result = await _client.PostAsync("/json/state", content);
         result.EnsureSuccessStatusCode();
     }
+
+    public Task UpdateState(Action<StateUpdate> configure)
+    {
+        if (configure is null)
+        {
+            throw new ArgumentNullException(nameof(configure));
+        }
+
+        var update = new StateUpdate();
+        configure(update);
+        return Post(update.Build());
+    }
 }

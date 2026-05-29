@@ -5,22 +5,30 @@ public sealed class StateRequest
     /// <inheritdoc cref="StateResponse.On"/>
     [JsonPropertyName("on")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public bool? On { get; set; }
+    public Toggleable? On { get; set; }
 
     /// <inheritdoc cref="StateResponse.Brightness"/>
     [JsonPropertyName("bri")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public byte? Brightness { get; set; }
+    public ByteAdjust? Brightness { get; set; }
 
     /// <inheritdoc cref="StateResponse.Transition"/>
     [JsonPropertyName("transition")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public byte? Transition { get; set; }
 
+    /// <summary>
+    /// Sets the transition time for the current API call only (the <c>tt</c> field).
+    /// One unit is 100ms.
+    /// </summary>
+    [JsonPropertyName("tt")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public byte? TransientTransition { get; set; }
+
     /// <inheritdoc cref="StateResponse.PresetId"/>
     [JsonPropertyName("ps")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? PresetId { get; set; }
+    public PresetSelector? PresetId { get; set; }
 
     /// <inheritdoc cref="StateResponse.PlaylistId"/>
     [JsonPropertyName("pl")]
@@ -66,7 +74,7 @@ public sealed class StateRequest
             On = stateResponse.On,
             Brightness = stateResponse.Brightness,
             Transition = stateResponse.Transition,
-            PresetId = stateResponse.PresetId,
+            PresetId = PresetSelector.Id(stateResponse.PresetId),
             PlaylistId = stateResponse.PlaylistId,
             Nightlight = stateResponse.Nightlight,
             UdpPackets = stateResponse.UdpPackets,

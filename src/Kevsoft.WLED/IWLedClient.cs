@@ -15,4 +15,9 @@ public interface IWLedClient
     Task Post(WLedRootRequest request);
 
     Task Post(StateRequest request);
+
+    /// <summary>
+    /// Builds and posts a sparse state update using a fluent builder.
+    /// </summary>
+    Task UpdateState(Action<StateUpdate> configure);
 }
