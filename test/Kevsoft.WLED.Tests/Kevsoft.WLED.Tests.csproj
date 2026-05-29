@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Kevsoft.WLED\Kevsoft.WLED.csproj" />
+    <ProjectReference Include="..\..\src\Kevsoft.WLED.DependencyInjection\Kevsoft.WLED.DependencyInjection.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -158,6 +158,13 @@ public sealed class StateRequest
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public PlaylistRequest? Playlist { get; set; }
 
+    /// <summary>
+    /// Reboot the device (the <c>rb</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("rb")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Reboot { get; set; }
+
     public static StateRequest From(StateResponse stateResponse)
     {
         return new StateRequest()

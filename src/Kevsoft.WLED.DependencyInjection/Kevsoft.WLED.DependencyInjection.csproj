@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(LibraryTargetFrameworks)</TargetFrameworks>
+    <RootNamespace>Kevsoft.WLED</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <PackageId>WLED.DependencyInjection</PackageId>
+    <Title>WLED.NET Dependency Injection</Title>
+    <PackageTags>WLED;DependencyInjection;IHttpClientFactory</PackageTags>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>Microsoft.Extensions.DependencyInjection integration for WLED.NET.</Description>
+    <IsPackable>True</IsPackable>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../icon.png" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Kevsoft.WLED/Kevsoft.WLED.csproj" />
+  </ItemGroup>
+
+</Project>

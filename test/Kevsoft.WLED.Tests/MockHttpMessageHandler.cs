@@ -24,12 +24,25 @@ public class MockHttpMessageHandler : HttpMessageHandler
         _mockedResponses.Add(uri, (HttpStatusCode.OK, null));
     }
 
+    public void AppendResponse(string uri, HttpStatusCode statusCode, string? body = null)
+    {
+        _mockedResponses.Add(uri, (statusCode, body));
+    }
+
+    /// <summary>When set, the handler throws this exception to simulate a transport failure.</summary>
+    public Exception? ThrowOnSend { get; set; }
+
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
         var body = await (request.Content?.ReadAsStringAsync(cancellationToken) ?? Task.FromResult(""));
         _capturedRequests[request.RequestUri!.AbsoluteUri] = body;
         _capturedRequestList.Add((request.RequestUri!.AbsoluteUri, body));
+
+        if (ThrowOnSend is not null)
+        {
+            throw ThrowOnSend;
+        }
         
         if (_mockedResponses.TryGetValue(request.RequestUri!.AbsoluteUri, out var value))
         {

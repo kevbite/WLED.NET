@@ -5,123 +5,89 @@ public sealed class WLedClient : IWLedClient
     private readonly HttpClient _client;
 
     public WLedClient(HttpMessageHandler httpMessageHandler, string baseUri)
+        : this(CreateClient(httpMessageHandler, baseUri))
     {
-        _client = new HttpClient(httpMessageHandler)
-        {
-            BaseAddress = new Uri(baseUri, UriKind.Absolute)
-        };
-
-        // Add the keep-alive flag to the header
-        _client.DefaultRequestHeaders.Add("Connection", "keep-alive");
     }
 
     public WLedClient(string baseUri) : this(new HttpClientHandler(), baseUri)
     {
-
     }
 
-    public async Task<WLedRootResponse> Get()
+    /// <summary>
+    /// Creates a client over a pre-configured <see cref="HttpClient"/>. The client's
+    /// <see cref="HttpClient.BaseAddress"/> must be set. Intended for <c>IHttpClientFactory</c>/DI use.
+    /// </summary>
+    public WLedClient(HttpClient client)
     {
-        var message = await _client.GetAsync("json");
+        _client = client ?? throw new ArgumentNullException(nameof(client));
 
-        message.EnsureSuccessStatusCode();
-
-        return (await message.Content.ReadFromJsonAsync<WLedRootResponse>())!;
+        if (_client.BaseAddress is null)
+        {
+            throw new ArgumentException("The HttpClient must have a BaseAddress set.", nameof(client));
+        }
     }
 
-    public async Task<StateResponse> GetState()
+    private static HttpClient CreateClient(HttpMessageHandler httpMessageHandler, string baseUri)
     {
-        var message = await _client.GetAsync("json/state");
+        var client = new HttpClient(httpMessageHandler)
+        {
+            BaseAddress = new Uri(baseUri, UriKind.Absolute)
+        };
 
-        message.EnsureSuccessStatusCode();
-
-        return (await message.Content.ReadFromJsonAsync<StateResponse>())!;
+        client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+        return client;
     }
 
-    public async Task<InformationResponse> GetInformation()
+    public Task<WLedRootResponse> Get(CancellationToken cancellationToken = default)
+        => GetJson<WLedRootResponse>("json", cancellationToken);
+
+    public Task<StateResponse> GetState(CancellationToken cancellationToken = default)
+        => GetJson<StateResponse>("json/state", cancellationToken);
+
+    public Task<InformationResponse> GetInformation(CancellationToken cancellationToken = default)
+        => GetJson<InformationResponse>("json/info", cancellationToken);
+
+    public Task<StateInfoResponse> GetStateInfo(CancellationToken cancellationToken = default)
+        => GetJson<StateInfoResponse>("json/si", cancellationToken);
+
+    public async Task<NetworkResponse[]> GetNetworks(CancellationToken cancellationToken = default)
     {
-        var message = await _client.GetAsync("json/info");
-
-        message.EnsureSuccessStatusCode();
-
-        return (await message.Content.ReadFromJsonAsync<InformationResponse>())!;
-    }
-
-    public async Task<StateInfoResponse> GetStateInfo()
-    {
-        var message = await _client.GetAsync("json/si");
-
-        message.EnsureSuccessStatusCode();
-
-        return (await message.Content.ReadFromJsonAsync<StateInfoResponse>())!;
-    }
-
-    public async Task<NetworkResponse[]> GetNetworks()
-    {
-        var message = await _client.GetAsync("json/net");
-
-        message.EnsureSuccessStatusCode();
-
-        var response = await message.Content.ReadFromJsonAsync<NetworksResponse>();
+        var response = await GetJson<NetworksResponse?>("json/net", cancellationToken);
         return response?.Networks ?? Array.Empty<NetworkResponse>();
     }
 
-    public async Task<LiveResponse?> GetLiveColors()
+    public async Task<LiveResponse?> GetLiveColors(CancellationToken cancellationToken = default)
     {
-        var message = await _client.GetAsync("json/live");
+        var message = await SendGetAsync("json/live", cancellationToken);
 
         if (message.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
         }
 
-        message.EnsureSuccessStatusCode();
+        await EnsureSuccess(message);
 
         if (message.Content.Headers.ContentLength == 0)
         {
             return null;
         }
 
-        return await message.Content.ReadFromJsonAsync<LiveResponse>();
+        return await message.Content.ReadFromJsonAsync<LiveResponse>(cancellationToken: cancellationToken);
     }
 
-    public async Task<string[]> GetEffects()
-    {
-        var message = await _client.GetAsync("json/eff");
+    public Task<string[]> GetEffects(CancellationToken cancellationToken = default)
+        => GetJson<string[]>("json/eff", cancellationToken);
 
-        message.EnsureSuccessStatusCode();
+    public Task<string[]> GetPalettes(CancellationToken cancellationToken = default)
+        => GetJson<string[]>("json/pal", cancellationToken);
 
-        return (await message.Content.ReadFromJsonAsync<string[]>())!;
-    }
+    public Task Post(WLedRootRequest request, CancellationToken cancellationToken = default)
+        => PostJson("/json", request, cancellationToken);
 
-    public async Task<string[]> GetPalettes()
-    {
-        var message = await _client.GetAsync("json/pal");
+    public Task Post(StateRequest request, CancellationToken cancellationToken = default)
+        => PostJson("/json/state", request, cancellationToken);
 
-        message.EnsureSuccessStatusCode();
-            
-        return (await message.Content.ReadFromJsonAsync<string[]>())!;
-    }
-
-    public async Task Post(WLedRootRequest request)
-    {
-        var stateString = JsonSerializer.Serialize(request);
-
-        using var content = new StringContentWithoutCharset(stateString, "application/json");
-        var result = await _client.PostAsync("/json", content);
-        result.EnsureSuccessStatusCode();
-    }
-        
-    public async Task Post(StateRequest request)
-    {
-        var stateString = JsonSerializer.Serialize(request);
-
-        using var content = new StringContentWithoutCharset(stateString, "application/json");
-        var result = await _client.PostAsync("/json/state", content);
-        result.EnsureSuccessStatusCode();
-    }
-
-    public Task UpdateState(Action<StateUpdate> configure)
+    public Task UpdateState(Action<StateUpdate> configure, CancellationToken cancellationToken = default)
     {
         if (configure is null)
         {
@@ -130,22 +96,46 @@ public sealed class WLedClient : IWLedClient
 
         var update = new StateUpdate();
         configure(update);
-        return Post(update.Build());
+        return Post(update.Build(), cancellationToken);
     }
 
-    public async Task<IReadOnlyDictionary<int, Preset>> GetPresets()
+    public Task TurnOn(CancellationToken cancellationToken = default)
+        => Post(new StateRequest { On = Toggleable.On }, cancellationToken);
+
+    public Task TurnOff(CancellationToken cancellationToken = default)
+        => Post(new StateRequest { On = Toggleable.Off }, cancellationToken);
+
+    public Task Toggle(CancellationToken cancellationToken = default)
+        => Post(new StateRequest { On = Toggleable.Toggle }, cancellationToken);
+
+    public Task SetBrightness(ByteAdjust brightness, CancellationToken cancellationToken = default)
+        => Post(new StateRequest { Brightness = brightness }, cancellationToken);
+
+    public Task SetColor(RgbColor color, int? segmentId = null, CancellationToken cancellationToken = default)
+        => Post(SingleSegment(segmentId, segment => segment.Colors = new SegmentColors(color)), cancellationToken);
+
+    public Task SetColor(RgbwColor color, int? segmentId = null, CancellationToken cancellationToken = default)
+        => Post(SingleSegment(segmentId, segment => segment.Colors = new SegmentColors(color)), cancellationToken);
+
+    public Task SetEffect(Selector effect, int? segmentId = null, CancellationToken cancellationToken = default)
+        => Post(SingleSegment(segmentId, segment => segment.EffectId = effect), cancellationToken);
+
+    public Task SetPalette(Selector palette, int? segmentId = null, CancellationToken cancellationToken = default)
+        => Post(SingleSegment(segmentId, segment => segment.ColorPaletteId = palette), cancellationToken);
+
+    public Task Reboot(CancellationToken cancellationToken = default)
+        => Post(new StateRequest { Reboot = true }, cancellationToken);
+
+    public async Task<IReadOnlyDictionary<int, Preset>> GetPresets(CancellationToken cancellationToken = default)
     {
-        var message = await _client.GetAsync("presets.json");
-
-        message.EnsureSuccessStatusCode();
-
-        var json = await message.Content.ReadAsStringAsync();
+        var json = await GetString("presets.json", cancellationToken);
         return PresetsParser.ParsePresets(json, new JsonSerializerOptions());
     }
 
-    public Task ApplyPreset(PresetSelector preset) => Post(new StateRequest { PresetId = preset });
+    public Task ApplyPreset(PresetSelector preset, CancellationToken cancellationToken = default)
+        => Post(new StateRequest { PresetId = preset }, cancellationToken);
 
-    public Task SavePreset(int id, SavePresetOptions? options = null)
+    public Task SavePreset(int id, SavePresetOptions? options = null, CancellationToken cancellationToken = default)
     {
         options ??= new SavePresetOptions();
 
@@ -157,32 +147,29 @@ public sealed class WLedClient : IWLedClient
             SaveSegmentBounds = options.SaveSegmentBounds,
             IncludeBrightness = options.IncludeBrightness,
             SaveSelectedSegments = options.SaveSelectedSegments
-        });
+        }, cancellationToken);
     }
 
-    public Task DeletePreset(int id) => Post(new StateRequest { DeletePresetSlot = id });
+    public Task DeletePreset(int id, CancellationToken cancellationToken = default)
+        => Post(new StateRequest { DeletePresetSlot = id }, cancellationToken);
 
-    public async Task<IReadOnlyDictionary<int, Playlist>> GetPlaylists()
+    public async Task<IReadOnlyDictionary<int, Playlist>> GetPlaylists(CancellationToken cancellationToken = default)
     {
-        var message = await _client.GetAsync("presets.json");
-
-        message.EnsureSuccessStatusCode();
-
-        var json = await message.Content.ReadAsStringAsync();
+        var json = await GetString("presets.json", cancellationToken);
         return PlaylistsParser.ParsePlaylists(json);
     }
 
-    public Task StartPlaylist(PlaylistDefinition playlist)
+    public Task StartPlaylist(PlaylistDefinition playlist, CancellationToken cancellationToken = default)
     {
         if (playlist is null)
         {
             throw new ArgumentNullException(nameof(playlist));
         }
 
-        return Post(new StateRequest { Playlist = PlaylistRequest.From(playlist) });
+        return Post(new StateRequest { Playlist = PlaylistRequest.From(playlist) }, cancellationToken);
     }
 
-    public Task StartPlaylist(Action<PlaylistBuilder> configure)
+    public Task StartPlaylist(Action<PlaylistBuilder> configure, CancellationToken cancellationToken = default)
     {
         if (configure is null)
         {
@@ -191,10 +178,10 @@ public sealed class WLedClient : IWLedClient
 
         var builder = new PlaylistBuilder();
         configure(builder);
-        return StartPlaylist(builder.Build());
+        return StartPlaylist(builder.Build(), cancellationToken);
     }
 
-    public Task SavePlaylist(int id, PlaylistDefinition playlist, SavePresetOptions? options = null)
+    public Task SavePlaylist(int id, PlaylistDefinition playlist, SavePresetOptions? options = null, CancellationToken cancellationToken = default)
     {
         if (playlist is null)
         {
@@ -212,45 +199,36 @@ public sealed class WLedClient : IWLedClient
             IncludeBrightness = options.IncludeBrightness,
             SaveSelectedSegments = options.SaveSelectedSegments,
             Playlist = PlaylistRequest.From(playlist)
-        });
+        }, cancellationToken);
     }
 
-    public async Task<IReadOnlyList<EffectMetadata>> GetEffectMetadata()
+    public async Task<IReadOnlyList<EffectMetadata>> GetEffectMetadata(CancellationToken cancellationToken = default)
     {
-        var fxdataMessage = await _client.GetAsync("json/fxdata");
-        fxdataMessage.EnsureSuccessStatusCode();
-        var fxdata = (await fxdataMessage.Content.ReadFromJsonAsync<string[]>())!;
-
-        var effects = await GetEffects();
+        var fxdata = await GetJson<string[]>("json/fxdata", cancellationToken);
+        var effects = await GetEffects(cancellationToken);
 
         return EffectMetadataParser.Parse(fxdata, effects);
     }
 
-    public async Task<IReadOnlyList<WledNode>> GetNodes()
+    public async Task<IReadOnlyList<WledNode>> GetNodes(CancellationToken cancellationToken = default)
     {
-        var message = await _client.GetAsync("json/nodes");
+        var message = await SendGetAsync("json/nodes", cancellationToken);
 
-        message.EnsureSuccessStatusCode();
+        await EnsureSuccess(message);
 
         if (message.Content.Headers.ContentLength == 0)
         {
             return Array.Empty<WledNode>();
         }
 
-        var response = await message.Content.ReadFromJsonAsync<NodesResponse>();
+        var response = await message.Content.ReadFromJsonAsync<NodesResponse>(cancellationToken: cancellationToken);
         return response?.Nodes ?? Array.Empty<WledNode>();
     }
 
-    public async Task<DeviceConfig> GetConfig()
-    {
-        var message = await _client.GetAsync("json/cfg");
+    public Task<DeviceConfig> GetConfig(CancellationToken cancellationToken = default)
+        => GetJson<DeviceConfig>("json/cfg", cancellationToken);
 
-        message.EnsureSuccessStatusCode();
-
-        return (await message.Content.ReadFromJsonAsync<DeviceConfig>())!;
-    }
-
-    public async Task UpdateConfig(DeviceConfig partial, UpdateConfigOptions? options = null)
+    public Task UpdateConfig(DeviceConfig partial, UpdateConfigOptions? options = null, CancellationToken cancellationToken = default)
     {
         if (partial is null)
         {
@@ -266,14 +244,10 @@ public sealed class WLedClient : IWLedClient
                 "Set UpdateConfigOptions.AllowNetworkChanges to true to permit it.");
         }
 
-        var configString = JsonSerializer.Serialize(partial);
-
-        using var content = new StringContentWithoutCharset(configString, "application/json");
-        var result = await _client.PostAsync("/json/cfg", content);
-        result.EnsureSuccessStatusCode();
+        return PostJson("/json/cfg", partial, cancellationToken);
     }
 
-    public async Task SetIndividualLeds(int segmentId, Action<IndividualLedBuilder> build, int maxColorsPerRequest = 256)
+    public async Task SetIndividualLeds(int segmentId, Action<IndividualLedBuilder> build, int maxColorsPerRequest = 256, CancellationToken cancellationToken = default)
     {
         if (build is null)
         {
@@ -291,7 +265,92 @@ public sealed class WLedClient : IWLedClient
                 {
                     new SegmentRequest { Id = segmentId, IndividualLeds = request }
                 }
-            });
+            }, cancellationToken);
         }
+    }
+
+    private static StateRequest SingleSegment(int? segmentId, Action<SegmentRequest> configure)
+    {
+        var segment = new SegmentRequest { Id = segmentId };
+        configure(segment);
+        return new StateRequest { Segments = new[] { segment } };
+    }
+
+    private async Task<T> GetJson<T>(string uri, CancellationToken cancellationToken)
+    {
+        var message = await SendGetAsync(uri, cancellationToken);
+        await EnsureSuccess(message);
+        return (await message.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken))!;
+    }
+
+    private async Task<string> GetString(string uri, CancellationToken cancellationToken)
+    {
+        var message = await SendGetAsync(uri, cancellationToken);
+        await EnsureSuccess(message);
+        return await message.Content.ReadAsStringAsync();
+    }
+
+    private async Task PostJson<T>(string uri, T payload, CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(payload);
+
+        using var content = new StringContentWithoutCharset(json, "application/json");
+        var result = await SendPostAsync(uri, content, cancellationToken);
+        await EnsureSuccess(result);
+    }
+
+    private async Task<HttpResponseMessage> SendGetAsync(string uri, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _client.GetAsync(uri, cancellationToken);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new WledConnectionException($"Failed to reach the WLED device at '{_client.BaseAddress}'.", ex);
+        }
+        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw new WledConnectionException("The request to the WLED device timed out.", ex);
+        }
+    }
+
+    private async Task<HttpResponseMessage> SendPostAsync(string uri, HttpContent content, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await _client.PostAsync(uri, content, cancellationToken);
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new WledConnectionException($"Failed to reach the WLED device at '{_client.BaseAddress}'.", ex);
+        }
+        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw new WledConnectionException("The request to the WLED device timed out.", ex);
+        }
+    }
+
+    private static async Task EnsureSuccess(HttpResponseMessage message)
+    {
+        if (message.IsSuccessStatusCode)
+        {
+            return;
+        }
+
+        string? body = null;
+        if (message.Content is not null)
+        {
+            try
+            {
+                body = await message.Content.ReadAsStringAsync();
+            }
+            catch
+            {
+                // Best-effort body capture for diagnostics.
+            }
+        }
+
+        throw new WledResponseException((int)message.StatusCode, body);
     }
 }
