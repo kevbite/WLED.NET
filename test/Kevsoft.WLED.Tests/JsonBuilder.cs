@@ -8,19 +8,22 @@ public class JsonBuilder
                 ""on"": {state.On.ToString().ToLower()},
                 ""bri"": {state.Brightness},
                 ""transition"": {state.Transition},
-                ""ps"": {state.PresetId},
-                ""pl"": {state.PlaylistId},
+                ""ps"": {state.PresetId ?? -1},
+                ""pl"": {state.PlaylistId ?? -1},
                 ""nl"": {{
                     ""on"": {state.Nightlight.On.ToString().ToLower()},
                     ""dur"": {state.Nightlight.Duration},
-                    ""mode"": {state.Nightlight.Mode},
-                    ""tbri"": {state.Nightlight.TargetBrightness}
+                    ""mode"": {(byte)state.Nightlight.Mode},
+                    ""tbri"": {state.Nightlight.TargetBrightness},
+                    ""rem"": {state.Nightlight.Remaining ?? -1}
                     }},
                 ""udpn"": {{
                     ""send"": {state.UdpPackets.Send.ToString().ToLower()},
-                    ""recv"": {state.UdpPackets.Receive.ToString().ToLower()}
+                    ""recv"": {state.UdpPackets.Receive.ToString().ToLower()},
+                    ""sgrp"": {(byte)state.UdpPackets.SendGroups},
+                    ""rgrp"": {(byte)state.UdpPackets.ReceiveGroups}
                     }},
-                ""lor"": {state.LiveDataOverride},
+                ""lor"": {(byte)state.LiveDataOverride},
                 ""mainseg"": {state.MainSegment},
                 ""seg"": [{String.Join(", ", state.Segments.Select(seg =>
                 {

@@ -54,7 +54,7 @@ public class WLedClientPostTests
         var json = JsonDocument.Parse(body!);
         var expected = JsonDocument.Parse(JsonBuilder.CreateRootResponse(response));
 
-        AssertBeEquivalentTo(json.RootElement.GetProperty("state"), expected.RootElement.GetProperty("state"));
+        AssertBeEquivalentTo(expected.RootElement.GetProperty("state"), json.RootElement.GetProperty("state"));
     }
 
     [Fact]
@@ -73,9 +73,11 @@ public class WLedClientPostTests
         var json = JsonDocument.Parse(body!);
         var expected = JsonDocument.Parse(JsonBuilder.CreateStateJson(response));
 
-        AssertBeEquivalentTo(json.RootElement, expected.RootElement);
+        AssertBeEquivalentTo(expected.RootElement, json.RootElement);
     }
 
+    // Iterates the properties present on the posted request and asserts each one matches the
+    // source response JSON. Read-only response keys (absent from the request) are ignored.
     private static void AssertBeEquivalentTo(JsonElement actualJsonElement, JsonElement expectedJsonElement)
     {
         if (expectedJsonElement.ValueKind == JsonValueKind.Object)

@@ -48,7 +48,7 @@ public sealed class StateRequest
     /// <inheritdoc cref="StateResponse.LiveDataOverride"/>
     [JsonPropertyName("lor")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public byte? LiveDataOverride { get; set; }
+    public LiveDataOverride? LiveDataOverride { get; set; }
 
     /// <inheritdoc cref="StateResponse.MainSegment"/>
     [JsonPropertyName("mainseg")]
@@ -67,6 +67,41 @@ public sealed class StateRequest
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Timebase { get; set; }
 
+    /// <summary>
+    /// Enter realtime/blank live mode for this call only (the <c>live</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("live")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Live { get; set; }
+
+    /// <summary>
+    /// Set the device clock to this Unix time in seconds (the <c>time</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("time")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public long? Time { get; set; }
+
+    /// <summary>
+    /// Load the ledmap with this id (0–9) (the <c>ledmap</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("ledmap")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public byte? LedMap { get; set; }
+
+    /// <summary>
+    /// Remove the last custom palette (the <c>rmcpal</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("rmcpal")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? RemoveLastCustomPalette { get; set; }
+
+    /// <summary>
+    /// Advance to the next preset in the active playlist (the <c>np</c> field, write-only).
+    /// </summary>
+    [JsonPropertyName("np")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? NextPreset { get; set; }
+
     public static StateRequest From(StateResponse stateResponse)
     {
         return new StateRequest()
@@ -74,7 +109,7 @@ public sealed class StateRequest
             On = stateResponse.On,
             Brightness = stateResponse.Brightness,
             Transition = stateResponse.Transition,
-            PresetId = PresetSelector.Id(stateResponse.PresetId),
+            PresetId = stateResponse.PresetId is { } presetId ? PresetSelector.Id(presetId) : null,
             PlaylistId = stateResponse.PlaylistId,
             Nightlight = stateResponse.Nightlight,
             UdpPackets = stateResponse.UdpPackets,

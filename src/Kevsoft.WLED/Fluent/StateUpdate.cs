@@ -60,6 +60,53 @@ public sealed class StateUpdate
         return this;
     }
 
+    /// <summary>Set how live/realtime data overrides the normal output.</summary>
+    public StateUpdate LiveDataOverride(LiveDataOverride mode)
+    {
+        _request.LiveDataOverride = mode;
+        return this;
+    }
+
+    /// <summary>Enter (or leave) realtime/blank live mode for this call only.</summary>
+    public StateUpdate EnterLiveMode(bool enabled = true)
+    {
+        _request.Live = enabled;
+        return this;
+    }
+
+    /// <summary>Set the device clock.</summary>
+    public StateUpdate SetTime(DateTimeOffset time)
+    {
+        _request.Time = time.ToUnixTimeSeconds();
+        return this;
+    }
+
+    /// <summary>Load the ledmap with the given id (0–9).</summary>
+    public StateUpdate LoadLedMap(byte id)
+    {
+        if (id > 9)
+        {
+            throw new ArgumentOutOfRangeException(nameof(id), id, "Ledmap id must be between 0 and 9.");
+        }
+
+        _request.LedMap = id;
+        return this;
+    }
+
+    /// <summary>Remove the last custom palette.</summary>
+    public StateUpdate RemoveLastCustomPalette()
+    {
+        _request.RemoveLastCustomPalette = true;
+        return this;
+    }
+
+    /// <summary>Advance to the next preset in the active playlist.</summary>
+    public StateUpdate NextPreset()
+    {
+        _request.NextPreset = true;
+        return this;
+    }
+
     /// <summary>Configure the segment with the given id, patching only the properties you set.</summary>
     public StateUpdate Segment(int id, Action<SegmentUpdate> configure)
     {

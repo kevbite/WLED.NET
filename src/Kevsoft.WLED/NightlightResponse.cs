@@ -18,14 +18,21 @@ public sealed class NightlightResponse
     public int Duration { get; set; }
 
     /// <summary>
-    /// Nightlight mode (0: instant, 1: fade, 2: color fade, 3: sunrise) (available since 0.10.2).
+    /// Nightlight mode (instant, fade, color fade, sunrise) (available since 0.10.2).
     /// </summary>
     [JsonPropertyName("mode")]
-    public byte Mode { get; set; }
+    public NightlightMode Mode { get; set; }
 
     /// <summary>
     /// Target brightness.
     /// </summary>
     [JsonPropertyName("tbri")]
     public int TargetBrightness { get; set; }
+
+    /// <summary>
+    /// Remaining nightlight duration in seconds, or <c>null</c> when nightlight is inactive.
+    /// </summary>
+    [JsonPropertyName("rem")]
+    [JsonConverter(typeof(NullableSentinelInt32JsonConverter))]
+    public int? Remaining { get; set; }
 }
