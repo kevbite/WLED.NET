@@ -92,4 +92,21 @@ public interface IWLedClient
     /// Reserved effects are excluded; <see cref="EffectMetadata.EffectId"/> stays aligned with the effects list.
     /// </summary>
     Task<IReadOnlyList<EffectMetadata>> GetEffectMetadata();
+
+    /// <summary>
+    /// Gets other WLED devices discovered on the local network via <c>/json/nodes</c>.
+    /// </summary>
+    Task<IReadOnlyList<WledNode>> GetNodes();
+
+    /// <summary>
+    /// Gets the full device configuration from <c>/json/cfg</c>.
+    /// </summary>
+    Task<DeviceConfig> GetConfig();
+
+    /// <summary>
+    /// Applies a partial device configuration update to <c>/json/cfg</c>. Only the sections set on
+    /// <paramref name="partial"/> are sent. Updating the network or access-point sections requires
+    /// opting in via <see cref="UpdateConfigOptions.AllowNetworkChanges"/>.
+    /// </summary>
+    Task UpdateConfig(DeviceConfig partial, UpdateConfigOptions? options = null);
 }

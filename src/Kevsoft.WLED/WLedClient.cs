@@ -226,6 +226,53 @@ public sealed class WLedClient : IWLedClient
         return EffectMetadataParser.Parse(fxdata, effects);
     }
 
+    public async Task<IReadOnlyList<WledNode>> GetNodes()
+    {
+        var message = await _client.GetAsync("json/nodes");
+
+        message.EnsureSuccessStatusCode();
+
+        if (message.Content.Headers.ContentLength == 0)
+        {
+            return Array.Empty<WledNode>();
+        }
+
+        var response = await message.Content.ReadFromJsonAsync<NodesResponse>();
+        return response?.Nodes ?? Array.Empty<WledNode>();
+    }
+
+    public async Task<DeviceConfig> GetConfig()
+    {
+        var message = await _client.GetAsync("json/cfg");
+
+        message.EnsureSuccessStatusCode();
+
+        return (await message.Content.ReadFromJsonAsync<DeviceConfig>())!;
+    }
+
+    public async Task UpdateConfig(DeviceConfig partial, UpdateConfigOptions? options = null)
+    {
+        if (partial is null)
+        {
+            throw new ArgumentNullException(nameof(partial));
+        }
+
+        options ??= new UpdateConfigOptions();
+
+        if (!options.AllowNetworkChanges && (partial.Network is not null || partial.AccessPoint is not null))
+        {
+            throw new InvalidOperationException(
+                "Updating the network (nw) or access-point (ap) configuration can disconnect the device. " +
+                "Set UpdateConfigOptions.AllowNetworkChanges to true to permit it.");
+        }
+
+        var configString = JsonSerializer.Serialize(partial);
+
+        using var content = new StringContentWithoutCharset(configString, "application/json");
+        var result = await _client.PostAsync("/json/cfg", content);
+        result.EnsureSuccessStatusCode();
+    }
+
     public async Task SetIndividualLeds(int segmentId, Action<IndividualLedBuilder> build, int maxColorsPerRequest = 256)
     {
         if (build is null)
