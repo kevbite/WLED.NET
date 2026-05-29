@@ -86,4 +86,10 @@ public interface IWLedClient
     /// carrying at most <paramref name="maxColorsPerRequest"/> colours.
     /// </remarks>
     Task SetIndividualLeds(int segmentId, Action<IndividualLedBuilder> build, int maxColorsPerRequest = 256);
+
+    /// <summary>
+    /// Gets parsed effect metadata from <c>/json/fxdata</c>, describing which controls each effect uses.
+    /// Reserved effects are excluded; <see cref="EffectMetadata.EffectId"/> stays aligned with the effects list.
+    /// </summary>
+    Task<IReadOnlyList<EffectMetadata>> GetEffectMetadata();
 }

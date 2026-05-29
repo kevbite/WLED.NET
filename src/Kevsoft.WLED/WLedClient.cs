@@ -215,6 +215,17 @@ public sealed class WLedClient : IWLedClient
         });
     }
 
+    public async Task<IReadOnlyList<EffectMetadata>> GetEffectMetadata()
+    {
+        var fxdataMessage = await _client.GetAsync("json/fxdata");
+        fxdataMessage.EnsureSuccessStatusCode();
+        var fxdata = (await fxdataMessage.Content.ReadFromJsonAsync<string[]>())!;
+
+        var effects = await GetEffects();
+
+        return EffectMetadataParser.Parse(fxdata, effects);
+    }
+
     public async Task SetIndividualLeds(int segmentId, Action<IndividualLedBuilder> build, int maxColorsPerRequest = 256)
     {
         if (build is null)
