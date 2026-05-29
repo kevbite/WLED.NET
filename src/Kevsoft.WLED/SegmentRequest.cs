@@ -40,7 +40,7 @@ public sealed class SegmentRequest
     /// <inheritdoc cref="SegmentResponse.Colors"/>
     [JsonPropertyName("col")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int[][]? Colors { get; set; }
+    public SegmentColors? Colors { get; set; }
 
     /// <inheritdoc cref="SegmentResponse.EffectId"/>
     [JsonPropertyName("fx")]
@@ -50,12 +50,12 @@ public sealed class SegmentRequest
     /// <inheritdoc cref="SegmentResponse.EffectSpeed"/>
     [JsonPropertyName("sx")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? EffectSpeed { get; set; }
+    public ByteAdjust? EffectSpeed { get; set; }
 
     /// <inheritdoc cref="SegmentResponse.EffectIntensity"/>
     [JsonPropertyName("ix")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? EffectIntensity { get; set; }
+    public ByteAdjust? EffectIntensity { get; set; }
 
     /// <inheritdoc cref="SegmentResponse.ColorPaletteId"/>
     [JsonPropertyName("pal")]
@@ -85,12 +85,102 @@ public sealed class SegmentRequest
     /// <inheritdoc cref="SegmentResponse.Brightness"/>
     [JsonPropertyName("bri")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? Brightness { get; set; }
+    public ByteAdjust? Brightness { get; set; }
 
     /// <inheritdoc cref="SegmentResponse.Mirror"/>
     [JsonPropertyName("mi")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? Mirror { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.Name"/>
+    [JsonPropertyName("n")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Name { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.Cct"/>
+    [JsonPropertyName("cct")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public ColorTemperature? Cct { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.CustomSlider1"/>
+    [JsonPropertyName("c1")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public byte? CustomSlider1 { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.CustomSlider2"/>
+    [JsonPropertyName("c2")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public byte? CustomSlider2 { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.CustomSlider3"/>
+    [JsonPropertyName("c3")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public byte? CustomSlider3 { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.Option1"/>
+    [JsonPropertyName("o1")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Option1 { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.Option2"/>
+    [JsonPropertyName("o2")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Option2 { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.Option3"/>
+    [JsonPropertyName("o3")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Option3 { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.Expand1D"/>
+    [JsonPropertyName("m12")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Expand1D? Expand1D { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.SoundSimulation"/>
+    [JsonPropertyName("si")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public SoundSimulation? SoundSimulation { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.Set"/>
+    [JsonPropertyName("set")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public byte? Set { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.StartY"/>
+    [JsonPropertyName("startY")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? StartY { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.StopY"/>
+    [JsonPropertyName("stopY")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? StopY { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.ReverseY"/>
+    [JsonPropertyName("rY")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? ReverseY { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.MirrorY"/>
+    [JsonPropertyName("mY")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? MirrorY { get; set; }
+
+    /// <inheritdoc cref="SegmentResponse.Transpose"/>
+    [JsonPropertyName("tp")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Transpose { get; set; }
+
+    /// <summary>Write-only: reset all effect parameters (speed, intensity, custom sliders, options) to the effect defaults.</summary>
+    [JsonPropertyName("fxdef")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? LoadEffectDefaults { get; set; }
+
+    /// <summary>Write-only: repeat the segment's settings to fill the whole strip.</summary>
+    [JsonPropertyName("rpt")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? RepeatToFill { get; set; }
 
     public static SegmentRequest From(SegmentResponse segmentResponse)
     {
@@ -113,7 +203,23 @@ public sealed class SegmentRequest
             Freeze = segmentResponse.Freeze,
             SegmentState = segmentResponse.SegmentState,
             Brightness = segmentResponse.Brightness,
-            Mirror = segmentResponse.Mirror
+            Mirror = segmentResponse.Mirror,
+            Name = segmentResponse.Name,
+            Cct = segmentResponse.Cct,
+            CustomSlider1 = segmentResponse.CustomSlider1,
+            CustomSlider2 = segmentResponse.CustomSlider2,
+            CustomSlider3 = segmentResponse.CustomSlider3,
+            Option1 = segmentResponse.Option1,
+            Option2 = segmentResponse.Option2,
+            Option3 = segmentResponse.Option3,
+            Expand1D = segmentResponse.Expand1D,
+            SoundSimulation = segmentResponse.SoundSimulation,
+            Set = segmentResponse.Set,
+            StartY = segmentResponse.StartY,
+            StopY = segmentResponse.StopY,
+            ReverseY = segmentResponse.ReverseY,
+            MirrorY = segmentResponse.MirrorY,
+            Transpose = segmentResponse.Transpose
         };
     }
 

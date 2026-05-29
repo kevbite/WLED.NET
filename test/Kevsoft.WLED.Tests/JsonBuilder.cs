@@ -36,7 +36,7 @@ public class JsonBuilder
                             ""spc"": {seg.Spacing},
                             ""of"": {seg.Offset},
                             ""col"": [
-                              {String.Join(", ", seg.Colors.Select(col => $"[{String.Join(",", col)}]"))}
+                              {String.Join(", ", seg.Colors.Slots.Select(col => $"[{String.Join(",", col.ToBytes())}]"))}
                             ],
                             ""fx"": {seg.EffectId},
                             ""sx"": {seg.EffectSpeed},
@@ -47,7 +47,24 @@ public class JsonBuilder
                             ""frz"": {seg.Freeze.ToString().ToLower()},
                             ""on"": {seg.SegmentState.ToString().ToLower()},
                             ""bri"": {seg.Brightness},
-                            ""mi"": {seg.Mirror.ToString().ToLower()}
+                            ""mi"": {seg.Mirror.ToString().ToLower()},
+                            ""n"": ""{seg.Name}"",
+                            ""cct"": {seg.Cct.Value},
+                            ""c1"": {seg.CustomSlider1},
+                            ""c2"": {seg.CustomSlider2},
+                            ""c3"": {seg.CustomSlider3},
+                            ""o1"": {seg.Option1.ToString().ToLower()},
+                            ""o2"": {seg.Option2.ToString().ToLower()},
+                            ""o3"": {seg.Option3.ToString().ToLower()},
+                            ""m12"": {(byte)seg.Expand1D},
+                            ""si"": {(byte)seg.SoundSimulation},
+                            ""set"": {seg.Set},
+                            ""cln"": {seg.Clones ?? -1},
+                            ""startY"": {seg.StartY},
+                            ""stopY"": {seg.StopY},
+                            ""rY"": {seg.ReverseY.ToString().ToLower()},
+                            ""mY"": {seg.MirrorY.ToString().ToLower()},
+                            ""tp"": {seg.Transpose.ToString().ToLower()}
                             }}";
                 }))}],
                 ""tb"": {state.Timebase}
