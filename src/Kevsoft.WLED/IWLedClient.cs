@@ -4,6 +4,13 @@ public interface IWLedClient
 {
     Task<WLedRootResponse> Get(CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Gets a cohesive <see cref="WLedDevice"/> snapshot from a single <c>GET /json</c> request,
+    /// combining state, info and the effect/palette catalogs. This is the recommended read path for
+    /// app/UI code. Pass <see cref="DeviceSnapshotOptions"/> to also include effect metadata.
+    /// </summary>
+    Task<WLedDevice> GetDevice(DeviceSnapshotOptions? options = null, CancellationToken cancellationToken = default);
+
     Task<StateResponse> GetState(CancellationToken cancellationToken = default);
 
     Task<InformationResponse> GetInformation(CancellationToken cancellationToken = default);

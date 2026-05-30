@@ -41,6 +41,24 @@ public sealed class WLedClient : IWLedClient
     public Task<WLedRootResponse> Get(CancellationToken cancellationToken = default)
         => GetJson<WLedRootResponse>("json", cancellationToken);
 
+    public async Task<WLedDevice> GetDevice(DeviceSnapshotOptions? options = null, CancellationToken cancellationToken = default)
+    {
+        options ??= new DeviceSnapshotOptions();
+
+        var root = await Get(cancellationToken);
+        var effects = EffectCatalog.FromNames(root.Effects);
+        var palettes = PaletteCatalog.FromNames(root.Palettes);
+
+        IReadOnlyList<EffectMetadata>? metadata = null;
+        if (options.IncludeEffectMetadata)
+        {
+            var fxdata = await GetJson<string[]>("json/fxdata", cancellationToken);
+            metadata = EffectMetadataParser.Parse(fxdata, root.Effects);
+        }
+
+        return new WLedDevice(root.State, root.Information, effects, palettes, metadata);
+    }
+
     public Task<StateResponse> GetState(CancellationToken cancellationToken = default)
         => GetJson<StateResponse>("json/state", cancellationToken);
 
