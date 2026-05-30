@@ -15,15 +15,15 @@ public sealed class StateRequest
     /// <inheritdoc cref="StateResponse.Transition"/>
     [JsonPropertyName("transition")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public byte? Transition { get; set; }
+    public ushort? Transition { get; set; }
 
     /// <summary>
     /// Sets the transition time for the current API call only (the <c>tt</c> field).
-    /// One unit is 100ms.
+    /// One unit is 100ms. Range 0–65535.
     /// </summary>
     [JsonPropertyName("tt")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public byte? TransientTransition { get; set; }
+    public ushort? TransientTransition { get; set; }
 
     /// <inheritdoc cref="StateResponse.PresetId"/>
     [JsonPropertyName("ps")]

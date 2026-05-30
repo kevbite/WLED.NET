@@ -32,7 +32,7 @@ public sealed class StateUpdate
         return this;
     }
 
-    /// <summary>Set the crossfade transition duration (rounded to 100ms units, max 25.5s).</summary>
+    /// <summary>Set the crossfade transition duration (rounded to 100ms units, max ~109 minutes).</summary>
     public StateUpdate Transition(TimeSpan duration)
     {
         _request.Transition = ToTransitionUnits(duration);
@@ -131,18 +131,18 @@ public sealed class StateUpdate
         return _request;
     }
 
-    private static byte ToTransitionUnits(TimeSpan duration)
+    private static ushort ToTransitionUnits(TimeSpan duration)
     {
         var units = Math.Round(duration.TotalMilliseconds / 100.0, MidpointRounding.AwayFromZero);
         if (units < 0)
         {
             units = 0;
         }
-        else if (units > byte.MaxValue)
+        else if (units > ushort.MaxValue)
         {
-            units = byte.MaxValue;
+            units = ushort.MaxValue;
         }
 
-        return (byte)units;
+        return (ushort)units;
     }
 }

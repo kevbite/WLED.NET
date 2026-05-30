@@ -15,10 +15,10 @@ public sealed class StateResponse
     public byte Brightness { get; set; }
 
     /// <summary>
-    /// Duration of the crossfade between different colors/brightness levels. One unit is 100ms, so a value of 4 results in a transition of 400ms.
+    /// Duration of the crossfade between different colors/brightness levels. One unit is 100ms, so a value of 4 results in a transition of 400ms. Range 0–65535.
     /// </summary>
     [JsonPropertyName("transition")]
-    public byte Transition { get; set; }
+    public ushort Transition { get; set; }
 
     /// <summary>
     /// ID of currently set preset, or <c>null</c> when none is active.
