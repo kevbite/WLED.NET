@@ -64,6 +64,10 @@ These plans cross-reference two mature community libraries (linked by the WLED d
 | 9 | [Effect metadata (`/json/fxdata`)](9-effect-metadata.md) | Feature |
 | 10 | [Configuration API (`/json/cfg`)](10-config-api.md) | Feature |
 | 11 | [Client ergonomics & cross-cutting concerns](11-client-ergonomics-and-cross-cutting.md) | Quality |
+| 12 | [Usability & correctness improvements](12-usability-and-correctness-improvements.md) | Quality |
+| 13 | [Device ergonomics & agent guidance](13-device-ergonomics-and-agent-guidance.md) | Quality |
+| 14 | [HttpClient connection lifetime & DNS staleness](14-httpclient-connection-lifetime.md) | Reliability |
+| 15 | [NuGet package metadata, README & Source Link](15-nuget-package-metadata.md) | Packaging |
 | 12 | [Usability & correctness improvements (post-review)](12-usability-and-correctness-improvements.md) | Correctness |
 | 13 | [Device ergonomics, catalogs & agent guidance](13-device-ergonomics-and-agent-guidance.md) | Usability |
 | 14 | [HttpClient connection lifetime & DNS staleness](14-httpclient-connection-lifetime.md) | Correctness |
