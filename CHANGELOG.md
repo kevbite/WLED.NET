@@ -48,6 +48,11 @@ rather than deprecated, so consuming code must be updated.
 - **`ColorTemperature.Kelvin` range widened to `1000–20000 K`** to match the docs' forward-
   compatible guidance, with a new `ColorTemperature.KelvinUnchecked(int)` escape hatch for
   values outside that range.
+- **`WLedClient(string)` now refreshes DNS.** The convenience constructor's self-owned
+  `HttpClient` uses a `SocketsHttpHandler` with a bounded `PooledConnectionLifetime` (2 minutes)
+  on modern runtimes, so a long-lived client picks up DNS/IP changes instead of pinning a stale
+  connection (fixes [#8](https://github.com/kevbite/WLED.NET/issues/8)). The `netstandard2.0`
+  build falls back to `HttpClientHandler`; use `IHttpClientFactory`/DI there.
 
 ### Added
 

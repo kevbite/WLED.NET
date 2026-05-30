@@ -9,7 +9,7 @@ public sealed class WLedClient : IWLedClient
     {
     }
 
-    public WLedClient(string baseUri) : this(new HttpClientHandler(), baseUri)
+    public WLedClient(string baseUri) : this(CreateDefaultHandler(), baseUri)
     {
     }
 
@@ -36,6 +36,25 @@ public sealed class WLedClient : IWLedClient
 
         client.DefaultRequestHeaders.Add("Connection", "keep-alive");
         return client;
+    }
+
+    /// <summary>
+    /// Creates the default <see cref="HttpMessageHandler"/> used when the client owns its own
+    /// <see cref="HttpClient"/>. On modern runtimes this is a <c>SocketsHttpHandler</c> with a bounded
+    /// <c>PooledConnectionLifetime</c> so pooled connections — and therefore DNS — are refreshed
+    /// periodically. See
+    /// https://learn.microsoft.com/dotnet/fundamentals/networking/http/httpclient-guidelines#dns-behavior.
+    /// </summary>
+    internal static HttpMessageHandler CreateDefaultHandler()
+    {
+#if NETSTANDARD2_0
+        return new HttpClientHandler();
+#else
+        return new SocketsHttpHandler
+        {
+            PooledConnectionLifetime = TimeSpan.FromMinutes(2)
+        };
+#endif
     }
 
     public Task<WLedRootResponse> Get(CancellationToken cancellationToken = default)
