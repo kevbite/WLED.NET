@@ -82,4 +82,74 @@ public class StateUpdateBuilderTests
         var root = JsonDocument.Parse(body!).RootElement;
         root.GetProperty("transition").GetInt32().Should().Be(ushort.MaxValue);
     }
+
+    [Fact]
+    public async Task SelectedSegmentsEmitsObjectFormWithoutId()
+    {
+        var (_, body) = await Capture(s => s
+            .SelectedSegments(seg => seg
+                .Color(RgbColor.FromHex("FFAA00"))
+                .Effect(Selector.Random)));
+
+        var seg = JsonDocument.Parse(body!).RootElement.GetProperty("seg");
+        seg.ValueKind.Should().Be(JsonValueKind.Object);
+        seg.TryGetProperty("id", out _).Should().BeFalse();
+        seg.GetProperty("fx").GetString().Should().Be("r");
+    }
+
+    [Fact]
+    public async Task SelectedSegmentsAccumulatesAcrossCalls()
+    {
+        var (_, body) = await Capture(s => s
+            .SelectedSegments(seg => seg.Effect(3))
+            .SelectedSegments(seg => seg.Brightness(128)));
+
+        var seg = JsonDocument.Parse(body!).RootElement.GetProperty("seg");
+        seg.ValueKind.Should().Be(JsonValueKind.Object);
+        seg.GetProperty("fx").GetInt32().Should().Be(3);
+        seg.GetProperty("bri").GetInt32().Should().Be(128);
+    }
+
+    [Fact]
+    public async Task SegmentByIdEmitsArrayForm()
+    {
+        var (_, body) = await Capture(s => s.Segment(2, seg => seg.Effect(1)));
+
+        var seg = JsonDocument.Parse(body!).RootElement.GetProperty("seg");
+        seg.ValueKind.Should().Be(JsonValueKind.Array);
+        seg.EnumerateArray().Single().GetProperty("id").GetInt32().Should().Be(2);
+    }
+
+    [Fact]
+    public void MixingSelectedThenExplicitThrows()
+    {
+        var update = new StateUpdate();
+        update.SelectedSegments(seg => seg.Effect(1));
+
+        update.Invoking(u => u.Segment(0, seg => seg.Effect(2)))
+            .Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void MixingExplicitThenSelectedThrows()
+    {
+        var update = new StateUpdate();
+        update.Segment(0, seg => seg.Effect(1));
+
+        update.Invoking(u => u.SelectedSegments(seg => seg.Effect(2)))
+            .Should().Throw<InvalidOperationException>();
+    }
+
+    private static async Task<(string Uri, string? Body)> Capture(Action<StateUpdate> configure)
+    {
+        var mockHttpMessageHandler = new MockHttpMessageHandler();
+        var baseUri = $"http://{Guid.NewGuid():N}.com";
+        mockHttpMessageHandler.AppendResponse($"{baseUri}/json/state");
+        var client = new WLedClient(mockHttpMessageHandler, baseUri);
+
+        await client.UpdateState(configure);
+
+        var (uri, body) = mockHttpMessageHandler.CapturedRequestList.Single();
+        return (uri, body);
+    }
 }

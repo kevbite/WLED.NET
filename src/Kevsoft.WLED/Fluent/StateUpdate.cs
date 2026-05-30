@@ -8,6 +8,15 @@ public sealed class StateUpdate
 {
     private readonly StateRequest _request = new();
     private readonly List<SegmentRequest> _segments = new();
+    private SegmentUpdate? _selectedSegment;
+    private SegmentMode _segmentMode = SegmentMode.None;
+
+    private enum SegmentMode
+    {
+        None,
+        Selected,
+        Explicit,
+    }
 
     /// <summary>Turn the light on.</summary>
     public StateUpdate TurnOn() => On(Toggleable.On);
@@ -108,6 +117,10 @@ public sealed class StateUpdate
     }
 
     /// <summary>Configure the segment with the given id, patching only the properties you set.</summary>
+    /// <remarks>
+    /// This targets the segment by id using the array form (<c>"seg":[{"id":N,...}]</c>). It cannot be
+    /// combined with <see cref="SelectedSegments"/> in the same update.
+    /// </remarks>
     public StateUpdate Segment(int id, Action<SegmentUpdate> configure)
     {
         if (configure is null)
@@ -115,17 +128,58 @@ public sealed class StateUpdate
             throw new ArgumentNullException(nameof(configure));
         }
 
+        if (_segmentMode == SegmentMode.Selected)
+        {
+            throw new InvalidOperationException(
+                "Cannot mix Segment(id, ...) and SelectedSegments(...) in the same update: WLED's 'seg' field " +
+                "is either the explicit-id array form or the selected-segment object form, not both.");
+        }
+
+        _segmentMode = SegmentMode.Explicit;
         var segment = new SegmentUpdate(id);
         configure(segment);
         _segments.Add(segment.Build());
         return this;
     }
 
+    /// <summary>
+    /// Configure the currently selected segments, patching only the properties you set.
+    /// </summary>
+    /// <remarks>
+    /// This targets the selected segments using the object form (<c>"seg":{...}</c>) without naming an id.
+    /// Calling it more than once configures the same selected-segment update cumulatively. It cannot be
+    /// combined with <see cref="Segment"/> in the same update.
+    /// </remarks>
+    public StateUpdate SelectedSegments(Action<SegmentUpdate> configure)
+    {
+        if (configure is null)
+        {
+            throw new ArgumentNullException(nameof(configure));
+        }
+
+        if (_segmentMode == SegmentMode.Explicit)
+        {
+            throw new InvalidOperationException(
+                "Cannot mix SelectedSegments(...) and Segment(id, ...) in the same update: WLED's 'seg' field " +
+                "is either the selected-segment object form or the explicit-id array form, not both.");
+        }
+
+        _segmentMode = SegmentMode.Selected;
+        _selectedSegment ??= new SegmentUpdate();
+        configure(_selectedSegment);
+        return this;
+    }
+
     internal StateRequest Build()
     {
-        if (_segments.Count > 0)
+        switch (_segmentMode)
         {
-            _request.Segments = _segments.ToArray();
+            case SegmentMode.Explicit:
+                _request.Segments = SegmentPayload.List(_segments.ToArray());
+                break;
+            case SegmentMode.Selected:
+                _request.Segments = SegmentPayload.Selected(_selectedSegment!.Build());
+                break;
         }
 
         return _request;

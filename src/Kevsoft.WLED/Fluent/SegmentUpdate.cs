@@ -10,6 +10,9 @@ public sealed class SegmentUpdate
 
     internal SegmentUpdate(int id) => _request = new SegmentRequest { Id = id };
 
+    /// <summary>Creates an id-less segment update targeting the selected segments (object form).</summary>
+    internal SegmentUpdate() => _request = new SegmentRequest();
+
     /// <summary>Turn the segment on.</summary>
     public SegmentUpdate TurnOn() => On(Toggleable.On);
 
