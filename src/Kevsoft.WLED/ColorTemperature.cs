@@ -2,14 +2,18 @@ namespace Kevsoft.WLED;
 
 /// <summary>
 /// A segment colour temperature. WLED accepts either a relative value (0–255) or an
-/// absolute value in Kelvin (1900–10091), so this type makes the caller state which they
-/// mean and guarantees the value is in range.
+/// absolute value in Kelvin, so this type makes the caller state which they mean.
 /// </summary>
+/// <remarks>
+/// The Kelvin range is validated against the forward-compatible bounds the WLED docs
+/// advise integrations to expect (<see cref="MinKelvin"/>–<see cref="MaxKelvin"/>). Use
+/// <see cref="KelvinUnchecked(int)"/> if you need to send a value outside that range.
+/// </remarks>
 [JsonConverter(typeof(ColorTemperatureJsonConverter))]
 public readonly struct ColorTemperature : IEquatable<ColorTemperature>
 {
-    internal const int MinKelvin = 1900;
-    internal const int MaxKelvin = 10091;
+    internal const int MinKelvin = 1000;
+    internal const int MaxKelvin = 20000;
 
     private ColorTemperature(int value, bool isKelvin)
     {
@@ -26,12 +30,28 @@ public readonly struct ColorTemperature : IEquatable<ColorTemperature>
     /// <summary>A relative colour temperature (0 = warmest, 255 = coldest).</summary>
     public static ColorTemperature Relative(byte value) => new(value, false);
 
-    /// <summary>An absolute colour temperature in Kelvin (1900–10091).</summary>
+    /// <summary>An absolute colour temperature in Kelvin (<see cref="MinKelvin"/>–<see cref="MaxKelvin"/>).</summary>
     public static ColorTemperature Kelvin(int kelvin)
     {
         if (kelvin < MinKelvin || kelvin > MaxKelvin)
         {
             throw new ArgumentOutOfRangeException(nameof(kelvin), kelvin, $"Kelvin must be between {MinKelvin} and {MaxKelvin}.");
+        }
+
+        return new ColorTemperature(kelvin, true);
+    }
+
+    /// <summary>
+    /// An absolute colour temperature in Kelvin without range validation. Use this when newer
+    /// firmware or hardware legitimately reports/accepts a value outside
+    /// <see cref="MinKelvin"/>–<see cref="MaxKelvin"/>. The value must be above 255 to be
+    /// interpreted as Kelvin by WLED.
+    /// </summary>
+    public static ColorTemperature KelvinUnchecked(int kelvin)
+    {
+        if (kelvin <= byte.MaxValue)
+        {
+            throw new ArgumentOutOfRangeException(nameof(kelvin), kelvin, "Kelvin must be greater than 255; lower values are treated as relative (0–255).");
         }
 
         return new ColorTemperature(kelvin, true);

@@ -31,11 +31,40 @@ public class SegmentObjectTests
     }
 
     [Theory]
-    [InlineData(1899)]
-    [InlineData(10092)]
+    [InlineData(999)]
+    [InlineData(20001)]
     public void KelvinOutOfRangeThrows(int kelvin)
     {
         var act = () => ColorTemperature.Kelvin(kelvin);
+
+        act.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    [Theory]
+    [InlineData(1000)]
+    [InlineData(16000)]
+    [InlineData(20000)]
+    public void KelvinAcceptsForwardCompatibleRange(int kelvin)
+    {
+        var cct = ColorTemperature.Kelvin(kelvin);
+
+        JsonSerializer.Serialize(cct, Options).Should().Be(kelvin.ToString());
+        cct.IsKelvin.Should().BeTrue();
+    }
+
+    [Fact]
+    public void KelvinUncheckedAllowsValuesBeyondRange()
+    {
+        var cct = ColorTemperature.KelvinUnchecked(25000);
+
+        JsonSerializer.Serialize(cct, Options).Should().Be("25000");
+        cct.IsKelvin.Should().BeTrue();
+    }
+
+    [Fact]
+    public void KelvinUncheckedRejectsRelativeRangeValues()
+    {
+        var act = () => ColorTemperature.KelvinUnchecked(200);
 
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
