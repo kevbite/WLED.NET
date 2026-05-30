@@ -62,6 +62,64 @@ public sealed class SegmentUpdate
         return Effect(Selector.Id(effect.Id));
     }
 
+    /// <summary>Select the effect described by the given metadata.</summary>
+    public SegmentUpdate Effect(EffectMetadata effect)
+    {
+        if (effect is null)
+        {
+            throw new ArgumentNullException(nameof(effect));
+        }
+
+        return Effect(Selector.Id(effect.EffectId));
+    }
+
+    /// <summary>
+    /// Apply the effect's recommended default values (speed, intensity and custom sliders) from its
+    /// metadata. Only the controls the effect actually defines defaults for are set.
+    /// </summary>
+    public SegmentUpdate ApplyEffectDefaults(EffectMetadata effect)
+    {
+        if (effect is null)
+        {
+            throw new ArgumentNullException(nameof(effect));
+        }
+
+        foreach (var slider in effect.Defaults)
+        {
+            var value = slider.Value;
+            switch (slider.Key)
+            {
+                case "sx":
+                    Speed(ToByte(value));
+                    break;
+                case "ix":
+                    Intensity(ToByte(value));
+                    break;
+                case "c1":
+                    CustomSlider1(ToByte(value));
+                    break;
+                case "c2":
+                    CustomSlider2(ToByte(value));
+                    break;
+                case "c3":
+                    _request.CustomSlider3 = value < 0 ? (byte)0 : value > 31 ? (byte)31 : (byte)value;
+                    break;
+            }
+        }
+
+        return this;
+    }
+
+    private static byte ToByte(int value)
+    {
+        if (value < 0)
+        {
+            return 0;
+        }
+
+        return value > 255 ? (byte)255 : (byte)value;
+    }
+
     /// <summary>Select the color palette by id, relative movement or at random.</summary>
     public SegmentUpdate Palette(Selector palette)
     {
