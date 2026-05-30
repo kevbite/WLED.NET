@@ -77,23 +77,6 @@ A feature isn't done when it compiles and tests pass. Also:
    intent methods, catalogs, snapshots), not raw DTOs.
 3. Update `CHANGELOG.md`.
 
-## Current gotchas
-
-- **`seg` object vs array form.** `"seg": { … }` targets the *selected* segments (no id);
-  `"seg": [{ "id": N, … }]` targets explicit ids. WLED infers `id:0` for an array entry
-  that omits its id, so the object form is the only way to address "the selected
-  segments". Use `SegmentPayload.Selected`/`List`, `StateUpdate.SelectedSegments(...)` for
-  the object form and `StateUpdate.Segment(id, ...)` for the array form. Mixing the two in
-  one update throws.
-- **`transition`/`tt` are `ushort`** (0–65535, one unit = 100ms).
-- **Reserved effects/palettes.** Entries named `RSVD` or `-` are placeholders that fall
-  back to Solid; filter them out of UI. `EffectCatalog`/`PaletteCatalog` expose
-  `IsReserved`/`AvailableOnly()` for this.
-- **Effect metadata** (`/json/fxdata`) describes which controls each effect uses and their
-  defaults; `EffectMetadata` is aligned by id with the (reserved-filtered) effects list.
-- **`GetDevice()`** is the recommended read path: it issues a single `GET /json` and
-  exposes state, info and effect/palette catalogs as one coherent snapshot.
-
 ## Reference material
 
 - WLED JSON API docs: <https://kno.wled.ge/interfaces/json-api/>
