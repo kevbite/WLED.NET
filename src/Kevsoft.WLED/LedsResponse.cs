@@ -18,7 +18,31 @@ public sealed class LedsResponse
     /// Logical AND of all active segment's virtual light capabilities
     /// </summary>
     [JsonPropertyName("lc")]
-    public byte LightCapabilities { get; set; }
+    public LightCapability LightCapabilities { get; set; }
+
+    /// <summary>
+    /// Per-segment virtual light capabilities.
+    /// </summary>
+    [JsonPropertyName("seglc")]
+    public LightCapability[] SegmentLightCapabilities { get; set; } = Array.Empty<LightCapability>();
+
+    /// <summary>
+    /// <c>true</c> if LEDs are 4-channel (RGB + White). Deprecated in favour of <see cref="LightCapabilities"/>.
+    /// </summary>
+    [JsonPropertyName("rgbw")]
+    public bool Rgbw { get; set; }
+
+    /// <summary>
+    /// <c>true</c> if a white channel slider should be displayed. Deprecated in favour of <see cref="LightCapabilities"/>.
+    /// </summary>
+    [JsonPropertyName("wv")]
+    public bool WhiteValueSlider { get; set; }
+
+    /// <summary>
+    /// <c>true</c> if the light supports colour temperature control. Deprecated in favour of <see cref="LightCapabilities"/>.
+    /// </summary>
+    [JsonPropertyName("cct")]
+    public bool SupportsColorTemperature { get; set; }
 
     /// <summary>
     /// Current LED power usage in milliamps as determined by the ABL. 0 if ABL is disabled.

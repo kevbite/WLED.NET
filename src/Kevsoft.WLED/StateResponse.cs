@@ -15,22 +15,24 @@ public sealed class StateResponse
     public byte Brightness { get; set; }
 
     /// <summary>
-    /// Duration of the crossfade between different colors/brightness levels. One unit is 100ms, so a value of 4 results in a transition of 400ms.
+    /// Duration of the crossfade between different colors/brightness levels. One unit is 100ms, so a value of 4 results in a transition of 400ms. Range 0–65535.
     /// </summary>
     [JsonPropertyName("transition")]
-    public byte Transition { get; set; }
+    public ushort Transition { get; set; }
 
     /// <summary>
-    /// ID of currently set preset.
+    /// ID of currently set preset, or <c>null</c> when none is active.
     /// </summary>
     [JsonPropertyName("ps")]
-    public int PresetId { get; set; }
+    [JsonConverter(typeof(NullableSentinelInt32JsonConverter))]
+    public int? PresetId { get; set; }
 
     /// <summary>
-    /// ID of currently set playlist. For now, this sets the preset cycle feature, -1 is off and 0 is on.
+    /// ID of currently set playlist, or <c>null</c> when none is active.
     /// </summary>
     [JsonPropertyName("pl")]
-    public int PlaylistId { get; set; }
+    [JsonConverter(typeof(NullableSentinelInt32JsonConverter))]
+    public int? PlaylistId { get; set; }
 
     /// <summary>
     /// Nightlight 
@@ -45,10 +47,10 @@ public sealed class StateResponse
     public UdpPacketsResponse UdpPackets { get; set; } = null!;
 
     /// <summary>
-    /// Live data override. 0 is off, 1 is override until live data ends, 2 is override until ESP reboot (available since 0.10.0)
+    /// Live data override. Off shows live data, or override until it ends / until reboot (available since 0.10.0).
     /// </summary>
     [JsonPropertyName("lor")]
-    public byte LiveDataOverride { get; set; }
+    public LiveDataOverride LiveDataOverride { get; set; }
 
     /// <summary>
     /// Main Segment

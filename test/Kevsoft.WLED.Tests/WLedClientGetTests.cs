@@ -2,7 +2,7 @@ namespace Kevsoft.WLED.Tests;
 
 public class WLedClientGetTests
 {
-    private readonly Fixture _fixture = new();
+    private readonly IFixture _fixture = new Fixture().Customize(new WledFixtureCustomization());
 
     [Fact]
     public async Task GetsAllData()

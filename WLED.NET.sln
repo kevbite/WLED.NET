@@ -15,6 +15,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{4717
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BasicConsole", "samples\BasicConsole\BasicConsole.csproj", "{C999A473-8438-4CB8-B17D-1E41FCFA8FE2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kevsoft.WLED.DependencyInjection", "src\Kevsoft.WLED.DependencyInjection\Kevsoft.WLED.DependencyInjection.csproj", "{9605865D-1F16-4545-8E58-10E01A73556A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,18 @@ Global
 		{C999A473-8438-4CB8-B17D-1E41FCFA8FE2}.Release|x64.Build.0 = Release|Any CPU
 		{C999A473-8438-4CB8-B17D-1E41FCFA8FE2}.Release|x86.ActiveCfg = Release|Any CPU
 		{C999A473-8438-4CB8-B17D-1E41FCFA8FE2}.Release|x86.Build.0 = Release|Any CPU
+		{9605865D-1F16-4545-8E58-10E01A73556A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9605865D-1F16-4545-8E58-10E01A73556A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9605865D-1F16-4545-8E58-10E01A73556A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9605865D-1F16-4545-8E58-10E01A73556A}.Debug|x64.Build.0 = Debug|Any CPU
+		{9605865D-1F16-4545-8E58-10E01A73556A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9605865D-1F16-4545-8E58-10E01A73556A}.Debug|x86.Build.0 = Debug|Any CPU
+		{9605865D-1F16-4545-8E58-10E01A73556A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9605865D-1F16-4545-8E58-10E01A73556A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9605865D-1F16-4545-8E58-10E01A73556A}.Release|x64.ActiveCfg = Release|Any CPU
+		{9605865D-1F16-4545-8E58-10E01A73556A}.Release|x64.Build.0 = Release|Any CPU
+		{9605865D-1F16-4545-8E58-10E01A73556A}.Release|x86.ActiveCfg = Release|Any CPU
+		{9605865D-1F16-4545-8E58-10E01A73556A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -69,6 +83,7 @@ Global
 		{47DCC7AD-B808-4EB8-A97C-9CB15741491A} = {7E21839E-604A-430D-8130-65A2BE734BAE}
 		{11742304-9022-452B-BB99-5F243014C2AC} = {F98C6650-E3D8-44E7-AD39-0B94E45D9C61}
 		{C999A473-8438-4CB8-B17D-1E41FCFA8FE2} = {4717F3F2-EB30-4C37-873D-FDF6E11A0FA6}
+		{9605865D-1F16-4545-8E58-10E01A73556A} = {7E21839E-604A-430D-8130-65A2BE734BAE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E2436D4C-C409-42E9-A77E-8113D7ECFC5B}

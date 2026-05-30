@@ -8,7 +8,11 @@ public class MockHttpMessageHandler : HttpMessageHandler
 
     private readonly Dictionary<string, string?> _capturedRequests = new(StringComparer.InvariantCultureIgnoreCase);
 
+    private readonly List<(string Uri, string? Body)> _capturedRequestList = new();
+
     public Dictionary<string, string?> CapturedRequests => _capturedRequests;
+
+    public IReadOnlyList<(string Uri, string? Body)> CapturedRequestList => _capturedRequestList;
 
     public void AppendResponse(string uri, string body)
     {
@@ -20,11 +24,25 @@ public class MockHttpMessageHandler : HttpMessageHandler
         _mockedResponses.Add(uri, (HttpStatusCode.OK, null));
     }
 
+    public void AppendResponse(string uri, HttpStatusCode statusCode, string? body = null)
+    {
+        _mockedResponses.Add(uri, (statusCode, body));
+    }
+
+    /// <summary>When set, the handler throws this exception to simulate a transport failure.</summary>
+    public Exception? ThrowOnSend { get; set; }
+
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        CapturedRequests.Add(request.RequestUri!.AbsoluteUri,
-            await (request.Content?.ReadAsStringAsync(cancellationToken) ?? Task.FromResult("")));
+        var body = await (request.Content?.ReadAsStringAsync(cancellationToken) ?? Task.FromResult(""));
+        _capturedRequests[request.RequestUri!.AbsoluteUri] = body;
+        _capturedRequestList.Add((request.RequestUri!.AbsoluteUri, body));
+
+        if (ThrowOnSend is not null)
+        {
+            throw ThrowOnSend;
+        }
         
         if (_mockedResponses.TryGetValue(request.RequestUri!.AbsoluteUri, out var value))
         {

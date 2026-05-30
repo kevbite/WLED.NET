@@ -45,10 +45,10 @@ public sealed class SegmentResponse
     public int Offset { get; set; }
 
     /// <summary>
-    /// Array that has up to 3 color arrays as elements, the primary, secondary (background) and tertiary colors of the segment. Each color is an array of 3 or 4 bytes, which represent an RGB(W) color.
+    /// The primary, secondary (background) and tertiary colors of the segment.
     /// </summary>
     [JsonPropertyName("col")]
-    public int[][] Colors { get; set; } = null!;
+    public SegmentColors Colors { get; set; } = null!;
 
     /// <summary>
     /// ID of the effect.
@@ -57,13 +57,16 @@ public sealed class SegmentResponse
     public int EffectId { get; set; }
 
     /// <summary>
-    /// Relative effect speed
+    /// Relative effect speed (0–255).
     /// </summary>
     [JsonPropertyName("sx")]
-    public int EffectSpeed { get; set; }
+    public byte EffectSpeed { get; set; }
 
+    /// <summary>
+    /// Effect intensity (0–255).
+    /// </summary>
     [JsonPropertyName("ix")]
-    public int EffectIntensity { get; set; }
+    public byte EffectIntensity { get; set; }
 
     /// <summary>
     /// ID of the color palette
@@ -96,14 +99,109 @@ public sealed class SegmentResponse
     public bool SegmentState { get; set; }
 
     /// <summary>
-    /// Sets the individual segment brightness (available since 0.10.0)
+    /// Sets the individual segment brightness (0–255, available since 0.10.0)
     /// </summary>
     [JsonPropertyName("bri")]
-    public int Brightness { get; set; }
+    public byte Brightness { get; set; }
 
     /// <summary>
     /// Mirrors the segment (available since 0.10.2)
     /// </summary>
     [JsonPropertyName("mi")]
     public bool Mirror { get; set; }
+
+    /// <summary>
+    /// Segment name.
+    /// </summary>
+    [JsonPropertyName("n")]
+    public string? Name { get; set; }
+
+    /// <summary>
+    /// Color temperature of the segment.
+    /// </summary>
+    [JsonPropertyName("cct")]
+    public ColorTemperature Cct { get; set; }
+
+    /// <summary>
+    /// Custom slider 1 (effect dependent, 0–255).
+    /// </summary>
+    [JsonPropertyName("c1")]
+    public byte CustomSlider1 { get; set; }
+
+    /// <summary>
+    /// Custom slider 2 (effect dependent, 0–255).
+    /// </summary>
+    [JsonPropertyName("c2")]
+    public byte CustomSlider2 { get; set; }
+
+    /// <summary>
+    /// Custom slider 3 (effect dependent, 0–31).
+    /// </summary>
+    [JsonPropertyName("c3")]
+    public byte CustomSlider3 { get; set; }
+
+    /// <summary>
+    /// Effect option 1 (effect dependent checkbox).
+    /// </summary>
+    [JsonPropertyName("o1")]
+    public bool Option1 { get; set; }
+
+    /// <summary>
+    /// Effect option 2 (effect dependent checkbox).
+    /// </summary>
+    [JsonPropertyName("o2")]
+    public bool Option2 { get; set; }
+
+    /// <summary>
+    /// Effect option 3 (effect dependent checkbox).
+    /// </summary>
+    [JsonPropertyName("o3")]
+    public bool Option3 { get; set; }
+
+    /// <summary>
+    /// How a 1D effect is expanded onto a 2D matrix.
+    /// </summary>
+    [JsonPropertyName("m12")]
+    public Expand1D Expand1D { get; set; }
+
+    /// <summary>
+    /// The sound simulation type used for audio-reactive effects.
+    /// </summary>
+    [JsonPropertyName("si")]
+    public SoundSimulation SoundSimulation { get; set; }
+
+    /// <summary>
+    /// Group/set id (0–3).
+    /// </summary>
+    [JsonPropertyName("set")]
+    public byte Set { get; set; }
+
+    /// <summary>
+    /// Source segment this segment was cloned from, or <c>null</c> if not a clone.
+    /// </summary>
+    [JsonPropertyName("cln")]
+    [JsonConverter(typeof(NullableSentinelInt32JsonConverter))]
+    public int? Clones { get; set; }
+
+    // 2D matrix only. These are ignored on 1D strips.
+
+    /// <summary>2D matrix: LED row the segment starts at.</summary>
+    [JsonPropertyName("startY")]
+    public int? StartY { get; set; }
+
+    /// <summary>2D matrix: LED row the segment stops at (exclusive).</summary>
+    [JsonPropertyName("stopY")]
+    public int? StopY { get; set; }
+
+    /// <summary>2D matrix: flip the segment vertically.</summary>
+    [JsonPropertyName("rY")]
+    public bool ReverseY { get; set; }
+
+    /// <summary>2D matrix: mirror the segment vertically.</summary>
+    [JsonPropertyName("mY")]
+    public bool MirrorY { get; set; }
+
+    /// <summary>2D matrix: transpose (swap X and Y).</summary>
+    [JsonPropertyName("tp")]
+    public bool Transpose { get; set; }
 }

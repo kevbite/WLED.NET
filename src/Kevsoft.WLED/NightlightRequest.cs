@@ -12,10 +12,10 @@ public sealed class NightlightRequest
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? Duration { get; set; }
 
-    /// <inheritdoc cref="NightlightRequest.Mode"/>
+    /// <inheritdoc cref="NightlightResponse.Mode"/>
     [JsonPropertyName("mode")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public byte? Mode { get; set; }
+    public NightlightMode? Mode { get; set; }
 
     /// <inheritdoc cref="NightlightRequest.TargetBrightness"/>
     [JsonPropertyName("tbri")]
