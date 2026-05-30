@@ -39,10 +39,48 @@ public class ConfigAndNodesTests
     }
 
     [Fact]
+    public async Task GetConfigParsesTypedSectionsAndPreservesUnknownKeys()
+    {
+        var json = @"{
+            ""id"":{""name"":""WLED"",""mdns"":""wled-desk"",""inv"":""Light""},
+            ""if"":{""mqtt"":{""en"":true,""broker"":""mqtt.local"",""port"":1883,""user"":""u"",""cid"":""WLED-1"",""rtn"":false}},
+            ""def"":{""on"":true,""bri"":128,""ps"":5},
+            ""custom_firmware_key"":42
+        }";
+
+        var mockHttpMessageHandler = new MockHttpMessageHandler();
+        var baseUri = $"http://{Guid.NewGuid():N}.com";
+        mockHttpMessageHandler.AppendResponse($"{baseUri}/json/cfg", json);
+        var client = new WLedClient(mockHttpMessageHandler, baseUri);
+
+        var config = await client.GetConfig();
+
+        config.Identity!.Name.Should().Be("WLED");
+        config.Identity.MdnsName.Should().Be("wled-desk");
+        config.Identity.Unknown.Should().ContainKey("inv");
+        config.Interfaces!.Mqtt!.Enabled.Should().BeTrue();
+        config.Interfaces.Mqtt.Broker.Should().Be("mqtt.local");
+        config.Interfaces.Mqtt.Port.Should().Be(1883);
+        config.Interfaces.Mqtt.User.Should().Be("u");
+        config.Interfaces.Mqtt.ClientId.Should().Be("WLED-1");
+        config.Interfaces.Mqtt.Unknown.Should().ContainKey("rtn");
+        config.Defaults!.On.Should().BeTrue();
+        config.Defaults.Brightness.Should().Be(128);
+        config.Defaults.PresetId.Should().Be(5);
+
+        // Round-trip should preserve both typed and unknown keys.
+        var element = JsonDocument.Parse(JsonSerializer.Serialize(config)).RootElement;
+        element.GetProperty("id").GetProperty("inv").GetString().Should().Be("Light");
+        element.GetProperty("if").GetProperty("mqtt").GetProperty("broker").GetString().Should().Be("mqtt.local");
+        element.GetProperty("def").GetProperty("bri").GetInt32().Should().Be(128);
+        element.GetProperty("custom_firmware_key").GetInt32().Should().Be(42);
+    }
+
+    [Fact]
     public async Task GetConfigPreservesUnknownKeys()
     {
         var json = @"{
-            ""id"":{""name"":""WLED"",""mdns"":""wled-desk""},
+            ""id"":{""name"":""WLED"",""mdns"":""wled-desk"",""inv"":""Light""},
             ""nw"":{""ins"":[{""ssid"":""home""}]},
             ""hw"":{""led"":{""total"":30}},
             ""custom_firmware_key"":42
@@ -56,13 +94,14 @@ public class ConfigAndNodesTests
         var config = await client.GetConfig();
 
         config.Identity!.Name.Should().Be("WLED");
-        config.Identity.Unknown.Should().ContainKey("mdns");
+        config.Identity.Unknown.Should().ContainKey("inv");
         config.Unknown.Should().ContainKey("custom_firmware_key");
 
         // Round-trip should preserve the unknown keys.
         var roundTripped = JsonSerializer.Serialize(config);
         var element = JsonDocument.Parse(roundTripped).RootElement;
         element.GetProperty("id").GetProperty("mdns").GetString().Should().Be("wled-desk");
+        element.GetProperty("id").GetProperty("inv").GetString().Should().Be("Light");
         element.GetProperty("custom_firmware_key").GetInt32().Should().Be(42);
         element.GetProperty("hw").GetProperty("led").GetProperty("total").GetInt32().Should().Be(30);
     }

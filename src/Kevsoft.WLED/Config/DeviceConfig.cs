@@ -18,6 +18,11 @@ public sealed class IdentityConfig : ConfigSection
     [JsonPropertyName("name")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Name { get; set; }
+
+    /// <summary>The mDNS hostname (the <c>.local</c> address), without the domain suffix.</summary>
+    [JsonPropertyName("mdns")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? MdnsName { get; set; }
 }
 
 /// <summary>Network/Wi-Fi client configuration (<c>cfg.nw</c>). Changing this can disconnect the device.</summary>
@@ -38,6 +43,39 @@ public sealed class HardwareConfig : ConfigSection
 /// <summary>Interface configuration such as sync, MQTT and time (<c>cfg.if</c>).</summary>
 public sealed class InterfacesConfig : ConfigSection
 {
+    /// <summary>MQTT configuration (<c>mqtt</c>).</summary>
+    [JsonPropertyName("mqtt")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public MqttConfig? Mqtt { get; set; }
+}
+
+/// <summary>MQTT broker configuration (<c>cfg.if.mqtt</c>).</summary>
+public sealed class MqttConfig : ConfigSection
+{
+    /// <summary>Whether the MQTT integration is enabled.</summary>
+    [JsonPropertyName("en")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Enabled { get; set; }
+
+    /// <summary>The MQTT broker host.</summary>
+    [JsonPropertyName("broker")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Broker { get; set; }
+
+    /// <summary>The MQTT broker port.</summary>
+    [JsonPropertyName("port")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? Port { get; set; }
+
+    /// <summary>The MQTT username.</summary>
+    [JsonPropertyName("user")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? User { get; set; }
+
+    /// <summary>The MQTT client id.</summary>
+    [JsonPropertyName("cid")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? ClientId { get; set; }
 }
 
 /// <summary>Light/behaviour configuration (<c>cfg.light</c>).</summary>
@@ -48,6 +86,20 @@ public sealed class LightConfig : ConfigSection
 /// <summary>Boot default configuration (<c>cfg.def</c>).</summary>
 public sealed class DefaultsConfig : ConfigSection
 {
+    /// <summary>The on/off state applied at boot.</summary>
+    [JsonPropertyName("on")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? On { get; set; }
+
+    /// <summary>The brightness applied at boot (0–255).</summary>
+    [JsonPropertyName("bri")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public byte? Brightness { get; set; }
+
+    /// <summary>The preset id applied at boot.</summary>
+    [JsonPropertyName("ps")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? PresetId { get; set; }
 }
 
 /// <summary>
