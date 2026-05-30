@@ -55,6 +55,33 @@ public class CommandValueTests
         JsonSerializer.Serialize(Selector.Next, Options).Should().Be("\"~\"");
         JsonSerializer.Serialize(Selector.Previous, Options).Should().Be("\"~-\"");
         JsonSerializer.Serialize(Selector.Random, Options).Should().Be("\"r\"");
+        JsonSerializer.Serialize(Selector.RandomInRange(5, 10), Options).Should().Be("\"5~10r\"");
+    }
+
+    [Fact]
+    public void SelectorRoundTrips()
+    {
+        JsonSerializer.Deserialize<Selector>("5", Options).Should().Be(Selector.Id(5));
+        JsonSerializer.Deserialize<Selector>("\"~\"", Options).Should().Be(Selector.Next);
+        JsonSerializer.Deserialize<Selector>("\"~-\"", Options).Should().Be(Selector.Previous);
+        JsonSerializer.Deserialize<Selector>("\"r\"", Options).Should().Be(Selector.Random);
+        JsonSerializer.Deserialize<Selector>("\"5~10r\"", Options).Should().Be(Selector.RandomInRange(5, 10));
+    }
+
+    [Fact]
+    public void SelectorRejectsInvalidRange()
+    {
+        var act = () => Selector.RandomInRange(10, 5);
+
+        act.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void SelectorRejectsInvalidToken()
+    {
+        var act = () => JsonSerializer.Deserialize<Selector>("\"nope\"", Options);
+
+        act.Should().Throw<JsonException>();
     }
 
     [Fact]
