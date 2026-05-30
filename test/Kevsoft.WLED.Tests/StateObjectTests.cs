@@ -75,4 +75,20 @@ public class StateObjectTests
 
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
+
+    [Fact]
+    public async Task LoadLedMapAcceptsLedMapId()
+    {
+        var mockHttpMessageHandler = new MockHttpMessageHandler();
+        var baseUri = $"http://{Guid.NewGuid():N}.com";
+        mockHttpMessageHandler.AppendResponse($"{baseUri}/json/state");
+        var client = new WLedClient(mockHttpMessageHandler, baseUri);
+
+        await client.UpdateState(s => s.LoadLedMap(LedMapId.From(7)));
+
+        var (_, body) = mockHttpMessageHandler.CapturedRequests.Single();
+        var root = JsonDocument.Parse(body!).RootElement;
+
+        root.GetProperty("ledmap").GetByte().Should().Be(7);
+    }
 }

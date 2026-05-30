@@ -102,6 +102,13 @@ public sealed class StateUpdate
         return this;
     }
 
+    /// <summary>Load the ledmap with the given id (0–9).</summary>
+    public StateUpdate LoadLedMap(LedMapId id)
+    {
+        _request.LedMap = (byte)id.Value;
+        return this;
+    }
+
     /// <summary>Remove the last custom palette.</summary>
     public StateUpdate RemoveLastCustomPalette()
     {

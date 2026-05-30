@@ -157,6 +157,28 @@ public class SegmentObjectTests
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
+    [Fact]
+    public async Task SegmentBuilderAcceptsSegmentBounds()
+    {
+        var (_, segment) = await CaptureSegment(seg => seg
+            .Range(SegmentBounds.From(5, 25)));
+
+        segment.GetProperty("start").GetInt32().Should().Be(5);
+        segment.GetProperty("stop").GetInt32().Should().Be(25);
+    }
+
+    [Fact]
+    public async Task SegmentBuilderAcceptsMatrixBounds()
+    {
+        var (_, segment) = await CaptureSegment(seg => seg
+            .Range2D(MatrixBounds.From(0, 16, 0, 8)));
+
+        segment.GetProperty("start").GetInt32().Should().Be(0);
+        segment.GetProperty("stop").GetInt32().Should().Be(16);
+        segment.GetProperty("startY").GetInt32().Should().Be(0);
+        segment.GetProperty("stopY").GetInt32().Should().Be(8);
+    }
+
     private static async Task<(string Uri, JsonElement Segment)> CaptureSegment(Action<SegmentUpdate> configure)
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();

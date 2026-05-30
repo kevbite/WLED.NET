@@ -273,6 +273,9 @@ public sealed class SegmentUpdate
         return this;
     }
 
+    /// <summary>Set the segment bounds on a 1D strip.</summary>
+    public SegmentUpdate Range(SegmentBounds bounds) => Range(bounds.Start, bounds.Stop);
+
     /// <summary>Set the 2D matrix bounds of the segment.</summary>
     public SegmentUpdate Range2D(int startX, int stopX, int startY, int stopY)
     {
@@ -282,6 +285,10 @@ public sealed class SegmentUpdate
         _request.StopY = stopY;
         return this;
     }
+
+    /// <summary>Set the 2D matrix bounds of the segment.</summary>
+    public SegmentUpdate Range2D(MatrixBounds bounds) =>
+        Range2D(bounds.StartX, bounds.StopX, bounds.StartY, bounds.StopY);
 
     /// <summary>Reverse the segment (flips animation direction).</summary>
     public SegmentUpdate Reverse(bool value = true)
