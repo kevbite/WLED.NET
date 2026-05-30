@@ -41,6 +41,11 @@ services.AddWledClient("http://office-computer-wled/");
 services.AddWledClient(client => client.BaseAddress = new Uri("http://office-computer-wled/"));
 ```
 
+The `WLedClient(string)` constructor owns its `HttpClient` and uses a `SocketsHttpHandler`
+with a bounded `PooledConnectionLifetime`, so a long-lived client still picks up DNS changes
+(e.g. a WLED device that gets a new IP). For applications, registering via
+`IHttpClientFactory`/DI as above remains the recommended approach.
+
 ### Quick commands
 
 Common operations have first-class "intent" methods:
