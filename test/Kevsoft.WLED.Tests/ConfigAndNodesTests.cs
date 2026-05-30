@@ -145,6 +145,53 @@ public class ConfigAndNodesTests
         JsonDocument.Parse(body!).RootElement.TryGetProperty("nw", out _).Should().BeTrue();
     }
 
+    [Fact]
+    public async Task UpdateConfigBuilderEmitsOnlyTouchedSections()
+    {
+        var (_, body) = await Capture(client => client.UpdateConfig(cfg => cfg
+            .Identity(name: "Kitchen", mdnsName: "wled-kitchen")
+            .Mqtt(enabled: true, broker: "mqtt.local", port: 1883)
+            .BootDefaults(on: true, brightness: 128, presetId: PresetId.From(5))));
+
+        var element = JsonDocument.Parse(body!).RootElement;
+        element.GetProperty("id").GetProperty("name").GetString().Should().Be("Kitchen");
+        element.GetProperty("id").GetProperty("mdns").GetString().Should().Be("wled-kitchen");
+        element.GetProperty("if").GetProperty("mqtt").GetProperty("en").GetBoolean().Should().BeTrue();
+        element.GetProperty("if").GetProperty("mqtt").GetProperty("broker").GetString().Should().Be("mqtt.local");
+        element.GetProperty("if").GetProperty("mqtt").GetProperty("port").GetInt32().Should().Be(1883);
+        element.GetProperty("def").GetProperty("on").GetBoolean().Should().BeTrue();
+        element.GetProperty("def").GetProperty("bri").GetInt32().Should().Be(128);
+        element.GetProperty("def").GetProperty("ps").GetInt32().Should().Be(5);
+        element.TryGetProperty("nw", out _).Should().BeFalse();
+        element.TryGetProperty("hw", out _).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task UpdateConfigBuilderOmitsUntouchedMqttFields()
+    {
+        var (_, body) = await Capture(client => client.UpdateConfig(cfg => cfg
+            .Mqtt(broker: "mqtt.local")));
+
+        var mqtt = JsonDocument.Parse(body!).RootElement.GetProperty("if").GetProperty("mqtt");
+        mqtt.GetProperty("broker").GetString().Should().Be("mqtt.local");
+        mqtt.TryGetProperty("en", out _).Should().BeFalse();
+        mqtt.TryGetProperty("port", out _).Should().BeFalse();
+        mqtt.TryGetProperty("user", out _).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task UpdateConfigBuilderRespectsNetworkOptIn()
+    {
+        var mockHttpMessageHandler = new MockHttpMessageHandler();
+        var baseUri = $"http://{Guid.NewGuid():N}.com";
+        mockHttpMessageHandler.AppendResponse($"{baseUri}/json/cfg");
+        var client = new WLedClient(mockHttpMessageHandler, baseUri);
+
+        Func<Task> act = () => client.UpdateConfig(cfg => cfg.Identity(name: "x"));
+
+        await act.Should().NotThrowAsync();
+    }
+
     private static async Task<(string Uri, string? Body)> Capture(Func<WLedClient, Task> act)
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();

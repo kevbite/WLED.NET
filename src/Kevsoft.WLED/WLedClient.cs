@@ -301,6 +301,19 @@ public sealed class WLedClient : IWLedClient
         return PostJson("/json/cfg", partial, cancellationToken);
     }
 
+    public Task UpdateConfig(Action<ConfigUpdate> configure, UpdateConfigOptions? options = null, CancellationToken cancellationToken = default)
+    {
+        if (configure is null)
+        {
+            throw new ArgumentNullException(nameof(configure));
+        }
+
+        var builder = new ConfigUpdate();
+        configure(builder);
+
+        return UpdateConfig(builder.Build(), options, cancellationToken);
+    }
+
     public async Task SetIndividualLeds(int segmentId, Action<IndividualLedBuilder> build, int maxColorsPerRequest = 256, CancellationToken cancellationToken = default)
     {
         if (build is null)

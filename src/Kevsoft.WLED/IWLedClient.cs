@@ -167,4 +167,11 @@ public interface IWLedClient
     /// opting in via <see cref="UpdateConfigOptions.AllowNetworkChanges"/>.
     /// </summary>
     Task UpdateConfig(DeviceConfig partial, UpdateConfigOptions? options = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Applies a partial device configuration update to <c>/json/cfg</c> using a fluent builder. Only the
+    /// sections you touch on <paramref name="configure"/> are sent. Updating the network or access-point
+    /// sections requires opting in via <see cref="UpdateConfigOptions.AllowNetworkChanges"/>.
+    /// </summary>
+    Task UpdateConfig(Action<ConfigUpdate> configure, UpdateConfigOptions? options = null, CancellationToken cancellationToken = default);
 }
