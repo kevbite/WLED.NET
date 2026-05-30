@@ -65,6 +65,7 @@ These plans cross-reference two mature community libraries (linked by the WLED d
 | 10 | [Configuration API (`/json/cfg`)](10-config-api.md) | Feature |
 | 11 | [Client ergonomics & cross-cutting concerns](11-client-ergonomics-and-cross-cutting.md) | Quality |
 | 12 | [Usability & correctness improvements (post-review)](12-usability-and-correctness-improvements.md) | Correctness |
+| 13 | [Device ergonomics, catalogs & agent guidance](13-device-ergonomics-and-agent-guidance.md) | Usability |
 
 Plan 0 modernises the toolchain (multi-targeting `netstandard2.0;net8.0;net9.0;net10.0`)
 and should land first. Plans 1–2 are the ergonomic foundation and unblock everything else. Plans 3–10 add
