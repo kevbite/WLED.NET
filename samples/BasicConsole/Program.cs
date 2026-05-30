@@ -19,13 +19,30 @@ Console.WriteLine($"Connected to {info.Name} running WLED {info.VersionName} wit
 var state = await client.GetState();
 Console.WriteLine($"Power: {(state.On ? "on" : "off")}, brightness: {state.Brightness}");
 
+// --- Device snapshot -------------------------------------------------------
+
+var device = await client.GetDevice();
+Console.WriteLine($"{device.Name} has {device.Segments.Count} segments.");
+foreach (var segment in device.SelectedSegments)
+{
+    Console.WriteLine($"  Segment {segment.Id}: {segment.Effect.Name} / {segment.Palette.Name}");
+}
+
+// --- Catalogs --------------------------------------------------------------
+
+var effects = await client.GetEffectCatalog();
+if (effects.TryFindByName("Rainbow", out var rainbow))
+{
+    await client.SetEffect(rainbow);
+}
+
 // --- Sparse, fluent state updates -----------------------------------------
 
 await client.UpdateState(update => update
     .TurnOn()
     .Brightness(128)
     .Transition(TimeSpan.FromSeconds(2))
-    .Segment(0, segment => segment
+    .SelectedSegments(segment => segment
         .Effect(0)
         .Color(RgbColor.FromHex("0066FF"))));
 
@@ -55,5 +72,11 @@ foreach (var node in await client.GetNodes())
 {
     Console.WriteLine($"Found node {node.Name} at {node.IpAddress}");
 }
+
+// --- Safe partial configuration updates ------------------------------------
+
+await client.UpdateConfig(cfg => cfg
+    .Identity(name: "Office")
+    .BootDefaults(on: true, brightness: 128, presetId: PresetId.From(1)));
 
 await client.TurnOff();

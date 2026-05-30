@@ -55,6 +55,22 @@ rather than deprecated, so consuming code must be updated.
   (the WLED `"from~tor"` token).
 - **Typed device-configuration fields** for `id.mdns`, `if.mqtt` (`en`/`broker`/`port`/`user`/`cid`)
   and `def` (`on`/`bri`/`ps`), while preserving all other keys through `JsonExtensionData`.
+- **Device snapshot read model** (`GetDevice`) returning a queryable `WLedDevice`/`WLedDeviceSegment`
+  graph from a single `GET /json`, resolving each segment's effect and palette and optionally
+  fetching effect metadata via `DeviceSnapshotOptions.IncludeEffectMetadata`.
+- **Effect & palette catalogs** (`GetEffectCatalog`, `GetPaletteCatalog`) with `FindById`/`FindByName`
+  (and `Try*`) lookups, an `AvailableOnly` view that hides reserved `RSVD`/`-` slots, and
+  `SetEffect`/`SetPalette` overloads that accept catalog entries.
+- **Selected-segment fluent updates** via `StateUpdate.SelectedSegments(...)` (the WLED `"seg":{…}`
+  object form); mixing selected and id-targeted segments in one update throws.
+- **Actionable effect metadata**: collection lookups over `IReadOnlyList<EffectMetadata>`, plus
+  `SegmentUpdate.Effect(EffectMetadata)` and `ApplyEffectDefaults(EffectMetadata)` to seed
+  speed/intensity/custom sliders from metadata defaults.
+- **Strong id and range value types**: `SegmentId`, `EffectId`, `PaletteId`, `PresetId`,
+  `PlaylistId`, `LedMapId`, `SegmentBounds` and `MatrixBounds`, with range validation and
+  overloads on `SegmentUpdate.Range`/`Range2D` and `StateUpdate.LoadLedMap`.
+- **Fluent configuration updates** via `UpdateConfig(Action<ConfigUpdate>)` with `Identity`,
+  `Mqtt` and `BootDefaults` helpers that emit only the sections and fields you touch.
 
 ### Removed
 

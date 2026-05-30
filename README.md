@@ -74,6 +74,41 @@ var info  = await client.GetInformation(); // /json/info
 Console.WriteLine($"{info.Name} is running WLED {info.VersionName}.");
 ```
 
+### Device snapshot
+
+`GetDevice()` reads `/json` once and returns a queryable `WLedDevice` read model that
+resolves each segment's effect and palette against the device catalogs:
+
+```csharp
+var device = await client.GetDevice();
+
+Console.WriteLine($"{device.Name} — {(device.IsOn ? "on" : "off")} @ {device.Brightness}");
+
+foreach (var segment in device.SelectedSegments)
+{
+    Console.WriteLine($"Segment {segment.Id}: {segment.Effect.Name} / {segment.Palette.Name}");
+}
+
+// Opt in to effect metadata (an extra GET /json/fxdata) when you need it:
+var detailed = await client.GetDevice(new DeviceSnapshotOptions { IncludeEffectMetadata = true });
+```
+
+### Effect & palette catalogs
+
+Look effects and palettes up by id or name, and apply them type-safely:
+
+```csharp
+var effects = await client.GetEffectCatalog();
+
+var rainbow = effects.FindByName("Rainbow");   // throws if missing/ambiguous
+await client.SetEffect(rainbow);
+
+foreach (var entry in effects.AvailableOnly)    // skips reserved RSVD/"-" slots
+{
+    Console.WriteLine($"{entry.Id}: {entry.Name}");
+}
+```
+
 ### Fluent state updates
 
 Build a sparse update that only sends the fields you set:
@@ -87,6 +122,31 @@ await client.UpdateState(update => update
         .Effect(0)
         .Color(RgbColor.FromHex("0066FF"))
         .Speed(200)));
+```
+
+Target the currently *selected* segments (the WLED `"seg":{…}` object form) with
+`SelectedSegments(...)` instead of an explicit id:
+
+```csharp
+await client.UpdateState(update => update
+    .SelectedSegments(segment => segment
+        .Effect(9)
+        .Palette(11)));
+```
+
+### Strong ids & ranges
+
+Range-checked value types catch invalid ids before a request is sent, and flow into the
+existing `int`-based APIs:
+
+```csharp
+var preset = PresetId.From(5);                       // throws unless 1–250
+var ledmap = LedMapId.From(3);                       // throws unless 0–9
+
+await client.UpdateState(update => update
+    .LoadLedMap(ledmap)
+    .SelectedSegments(segment => segment
+        .Range(SegmentBounds.From(0, 30))));
 ```
 
 ### Individual LED control
@@ -112,6 +172,23 @@ await client.StartPlaylist(playlist => playlist
     .Repeat(3));
 ```
 
+### Device configuration
+
+Read configuration and apply safe partial writes with a fluent builder — only the
+sections and fields you touch are sent:
+
+```csharp
+var config = await client.GetConfig();
+
+await client.UpdateConfig(cfg => cfg
+    .Identity(name: "Kitchen", mdnsName: "wled-kitchen")
+    .Mqtt(enabled: true, broker: "mqtt.local", port: 1883)
+    .BootDefaults(on: true, brightness: 128, presetId: PresetId.From(5)));
+```
+
+Network and access-point changes can disconnect the device, so they require explicit
+opt-in via `UpdateConfigOptions.AllowNetworkChanges`.
+
 ### Error handling
 
 All calls throw a typed exception hierarchy:
@@ -132,6 +209,8 @@ Every method also accepts an optional `CancellationToken`.
 | Area | Endpoint(s) | Supported |
 | --- | --- | --- |
 | Full state/info/effects/palettes | `GET /json` | ✅ |
+| Device snapshot read model (`GetDevice`) | `GET /json` (+ `fxdata` opt-in) | ✅ |
+| Effect & palette catalogs (lookup by id/name) | `GET /json/eff`, `GET /json/pal` | ✅ |
 | Live state + info | `GET /json/si` | ✅ |
 | State | `GET`/`POST /json/state` | ✅ |
 | Device information | `GET /json/info` | ✅ |
@@ -146,6 +225,7 @@ Every method also accepts an optional `CancellationToken`.
 | Effect metadata | `GET /json/fxdata` | ✅ |
 | Node discovery | `GET /json/nodes` | ✅ |
 | Device configuration (read / safe partial write) | `GET`/`POST /json/cfg` | ✅ |
+| Strong id/range value types (`PresetId`, `LedMapId`, `SegmentBounds`…) | — | ✅ |
 | Typed exceptions & cancellation | — | ✅ |
 | DI / `IHttpClientFactory` integration | — | ✅ |
 
