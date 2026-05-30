@@ -273,7 +273,15 @@ public sealed class WLedClient : IWLedClient
     {
         var segment = new SegmentRequest { Id = segmentId };
         configure(segment);
-        return new StateRequest { Segments = new[] { segment } };
+
+        // No id => target the selected segments via the object form ("seg":{...}).
+        // An explicit id => target that segment via the array form ("seg":[{"id":N,...}]).
+        return new StateRequest
+        {
+            Segments = segmentId is null
+                ? SegmentPayload.Selected(segment)
+                : SegmentPayload.List(segment)
+        };
     }
 
     private async Task<T> GetJson<T>(string uri, CancellationToken cancellationToken)

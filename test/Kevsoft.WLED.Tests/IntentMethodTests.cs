@@ -49,7 +49,8 @@ public class IntentMethodTests
         var (_, body) = await Capture(client => client.SetColor(RgbColor.FromHex("FFAA00")));
 
         var root = JsonDocument.Parse(body!).RootElement;
-        var segment = root.GetProperty("seg").EnumerateArray().Single();
+        var segment = root.GetProperty("seg");
+        segment.ValueKind.Should().Be(JsonValueKind.Object);
         segment.TryGetProperty("id", out _).Should().BeFalse();
         var color = segment.GetProperty("col").EnumerateArray().First().EnumerateArray()
             .Select(x => x.GetInt32()).ToArray();
@@ -61,8 +62,9 @@ public class IntentMethodTests
     {
         var (_, body) = await Capture(client => client.SetColor(RgbColor.FromHex("010203"), segmentId: 2));
 
-        var segment = JsonDocument.Parse(body!).RootElement.GetProperty("seg").EnumerateArray().Single();
-        segment.GetProperty("id").GetInt32().Should().Be(2);
+        var seg = JsonDocument.Parse(body!).RootElement.GetProperty("seg");
+        seg.ValueKind.Should().Be(JsonValueKind.Array);
+        seg.EnumerateArray().Single().GetProperty("id").GetInt32().Should().Be(2);
     }
 
     [Fact]
@@ -70,7 +72,8 @@ public class IntentMethodTests
     {
         var (_, body) = await Capture(client => client.SetColor(RgbwColor.FromHex("01020304")));
 
-        var segment = JsonDocument.Parse(body!).RootElement.GetProperty("seg").EnumerateArray().Single();
+        var segment = JsonDocument.Parse(body!).RootElement.GetProperty("seg");
+        segment.ValueKind.Should().Be(JsonValueKind.Object);
         var color = segment.GetProperty("col").EnumerateArray().First().EnumerateArray()
             .Select(x => x.GetInt32()).ToArray();
         color.Should().Equal(1, 2, 3, 4);
@@ -81,7 +84,9 @@ public class IntentMethodTests
     {
         var (_, body) = await Capture(client => client.SetEffect(42));
 
-        var segment = JsonDocument.Parse(body!).RootElement.GetProperty("seg").EnumerateArray().Single();
+        var segment = JsonDocument.Parse(body!).RootElement.GetProperty("seg");
+        segment.ValueKind.Should().Be(JsonValueKind.Object);
+        segment.TryGetProperty("id", out _).Should().BeFalse();
         segment.GetProperty("fx").GetInt32().Should().Be(42);
     }
 
@@ -90,7 +95,9 @@ public class IntentMethodTests
     {
         var (_, body) = await Capture(client => client.SetPalette(7, segmentId: 1));
 
-        var segment = JsonDocument.Parse(body!).RootElement.GetProperty("seg").EnumerateArray().Single();
+        var seg = JsonDocument.Parse(body!).RootElement.GetProperty("seg");
+        seg.ValueKind.Should().Be(JsonValueKind.Array);
+        var segment = seg.EnumerateArray().Single();
         segment.GetProperty("id").GetInt32().Should().Be(1);
         segment.GetProperty("pal").GetInt32().Should().Be(7);
     }

@@ -58,7 +58,7 @@ public sealed class StateRequest
     /// <inheritdoc cref="StateResponse.Segments"/>
     [JsonPropertyName("seg")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public SegmentRequest[]? Segments { get; set; } = null!;
+    public SegmentPayload? Segments { get; set; } = null!;
 
     /// <summary>
     /// Timebase for effects.
