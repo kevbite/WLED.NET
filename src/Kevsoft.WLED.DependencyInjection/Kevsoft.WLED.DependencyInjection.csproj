@@ -10,6 +10,7 @@
     <Title>WLED.NET Dependency Injection</Title>
     <PackageTags>WLED;DependencyInjection;IHttpClientFactory</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>Microsoft.Extensions.DependencyInjection integration for WLED.NET.</Description>
     <IsPackable>True</IsPackable>
@@ -21,6 +22,11 @@
 
   <ItemGroup>
     <None Include="../../icon.png" Pack="true" Visible="false" PackagePath="" />
+    <None Include="../../README.md" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>

@@ -13,7 +13,9 @@ RUN dotnet restore
 
 FROM restore AS build
 ARG VERSION
+COPY ./.git ./.git
 COPY ./icon.png .
+COPY ./README.md .
 COPY ./src/Kevsoft.WLED/ ./src/Kevsoft.WLED/
 COPY ./src/Kevsoft.WLED.DependencyInjection/ ./src/Kevsoft.WLED.DependencyInjection/
 RUN dotnet build ./src/Kevsoft.WLED.DependencyInjection/Kevsoft.WLED.DependencyInjection.csproj --configuration Release -p:Version=${VERSION} --no-restore

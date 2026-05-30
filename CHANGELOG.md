@@ -53,6 +53,10 @@ rather than deprecated, so consuming code must be updated.
   on modern runtimes, so a long-lived client picks up DNS/IP changes instead of pinning a stale
   connection (fixes [#8](https://github.com/kevbite/WLED.NET/issues/8)). The `netstandard2.0`
   build falls back to `HttpClientHandler`; use `IHttpClientFactory`/DI there.
+- **Richer NuGet package metadata** for `WLED` and `WLED.DependencyInjection`: the package
+  pages now link back to the GitHub repository (`RepositoryUrl`/`PackageProjectUrl`), render the
+  README (`PackageReadmeFile`), and ship Source Link (`Microsoft.SourceLink.GitHub`) so
+  consumers can step through the library source in their debugger.
 
 ### Added
 
