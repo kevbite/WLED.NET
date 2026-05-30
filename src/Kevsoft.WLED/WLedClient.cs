@@ -81,6 +81,12 @@ public sealed class WLedClient : IWLedClient
     public Task<string[]> GetPalettes(CancellationToken cancellationToken = default)
         => GetJson<string[]>("json/pal", cancellationToken);
 
+    public async Task<EffectCatalog> GetEffectCatalog(CancellationToken cancellationToken = default)
+        => EffectCatalog.FromNames(await GetEffects(cancellationToken));
+
+    public async Task<PaletteCatalog> GetPaletteCatalog(CancellationToken cancellationToken = default)
+        => PaletteCatalog.FromNames(await GetPalettes(cancellationToken));
+
     public Task Post(WLedRootRequest request, CancellationToken cancellationToken = default)
         => PostJson("/json", request, cancellationToken);
 
@@ -122,6 +128,36 @@ public sealed class WLedClient : IWLedClient
 
     public Task SetPalette(Selector palette, int? segmentId = null, CancellationToken cancellationToken = default)
         => Post(SingleSegment(segmentId, segment => segment.ColorPaletteId = palette), cancellationToken);
+
+    public Task SetEffect(EffectCatalogEntry effect, int? segmentId = null, CancellationToken cancellationToken = default)
+    {
+        if (effect is null)
+        {
+            throw new ArgumentNullException(nameof(effect));
+        }
+
+        if (effect.IsReserved)
+        {
+            throw new ArgumentException($"Effect '{effect.Name}' (id {effect.Id}) is a reserved placeholder and cannot be selected.", nameof(effect));
+        }
+
+        return SetEffect(Selector.Id(effect.Id), segmentId, cancellationToken);
+    }
+
+    public Task SetPalette(PaletteCatalogEntry palette, int? segmentId = null, CancellationToken cancellationToken = default)
+    {
+        if (palette is null)
+        {
+            throw new ArgumentNullException(nameof(palette));
+        }
+
+        if (palette.IsReserved)
+        {
+            throw new ArgumentException($"Palette '{palette.Name}' (id {palette.Id}) is a reserved placeholder and cannot be selected.", nameof(palette));
+        }
+
+        return SetPalette(Selector.Id(palette.Id), segmentId, cancellationToken);
+    }
 
     public Task Reboot(CancellationToken cancellationToken = default)
         => Post(new StateRequest { Reboot = true }, cancellationToken);

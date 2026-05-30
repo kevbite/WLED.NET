@@ -43,11 +43,43 @@ public sealed class SegmentUpdate
         return this;
     }
 
+    /// <summary>Select the effect from a catalog entry. Throws if the entry is a reserved placeholder.</summary>
+    public SegmentUpdate Effect(EffectCatalogEntry effect)
+    {
+        if (effect is null)
+        {
+            throw new ArgumentNullException(nameof(effect));
+        }
+
+        if (effect.IsReserved)
+        {
+            throw new ArgumentException($"Effect '{effect.Name}' (id {effect.Id}) is a reserved placeholder and cannot be selected.", nameof(effect));
+        }
+
+        return Effect(Selector.Id(effect.Id));
+    }
+
     /// <summary>Select the color palette by id, relative movement or at random.</summary>
     public SegmentUpdate Palette(Selector palette)
     {
         _request.ColorPaletteId = palette;
         return this;
+    }
+
+    /// <summary>Select the palette from a catalog entry. Throws if the entry is a reserved placeholder.</summary>
+    public SegmentUpdate Palette(PaletteCatalogEntry palette)
+    {
+        if (palette is null)
+        {
+            throw new ArgumentNullException(nameof(palette));
+        }
+
+        if (palette.IsReserved)
+        {
+            throw new ArgumentException($"Palette '{palette.Name}' (id {palette.Id}) is a reserved placeholder and cannot be selected.", nameof(palette));
+        }
+
+        return Palette(Selector.Id(palette.Id));
     }
 
     /// <summary>Set the segment's color slots (primary, optional secondary and tertiary).</summary>

@@ -28,6 +28,18 @@ public interface IWLedClient
 
     Task<string[]> GetPalettes(CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Gets the effects as a typed <see cref="EffectCatalog"/> that supports lookup by id or name and
+    /// filtering out reserved (<c>RSVD</c>/<c>-</c>) placeholders.
+    /// </summary>
+    Task<EffectCatalog> GetEffectCatalog(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets the palettes as a typed <see cref="PaletteCatalog"/> that supports lookup by id or name and
+    /// filtering out reserved (<c>RSVD</c>/<c>-</c>) placeholders.
+    /// </summary>
+    Task<PaletteCatalog> GetPaletteCatalog(CancellationToken cancellationToken = default);
+
     Task Post(WLedRootRequest request, CancellationToken cancellationToken = default);
 
     Task Post(StateRequest request, CancellationToken cancellationToken = default);
@@ -60,6 +72,18 @@ public interface IWLedClient
 
     /// <summary>Sets the palette on a segment, or the selected segments when no id is given.</summary>
     Task SetPalette(Selector palette, int? segmentId = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sets the effect from a catalog entry on a segment, or the selected segments when no id is given.
+    /// Throws if the entry is a reserved placeholder.
+    /// </summary>
+    Task SetEffect(EffectCatalogEntry effect, int? segmentId = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Sets the palette from a catalog entry on a segment, or the selected segments when no id is given.
+    /// Throws if the entry is a reserved placeholder.
+    /// </summary>
+    Task SetPalette(PaletteCatalogEntry palette, int? segmentId = null, CancellationToken cancellationToken = default);
 
     /// <summary>Reboots the device.</summary>
     Task Reboot(CancellationToken cancellationToken = default);
