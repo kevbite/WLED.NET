@@ -7,9 +7,9 @@ var client = new WLedClient("http://wled-office-computer-wled/");
 
 await client.TurnOn();
 await client.SetBrightness(200);
-await client.SetColor(RgbColor.FromHex("FFAA00"));   // warm orange
+await client.SetColor(RgbColor.FromHex("FFAA00"));   // warm orange, selected segments
 await client.SetEffect(9);                            // "Rainbow"
-await client.SetPalette(11);                          // "Rainbow"
+await client.SetPalette(Selector.RandomInRange(5, 10)); // random palette in a range
 
 // --- Reading state ---------------------------------------------------------
 
@@ -24,6 +24,7 @@ Console.WriteLine($"Power: {(state.On ? "on" : "off")}, brightness: {state.Brigh
 await client.UpdateState(update => update
     .TurnOn()
     .Brightness(128)
+    .Transition(TimeSpan.FromSeconds(2))
     .Segment(0, segment => segment
         .Effect(0)
         .Color(RgbColor.FromHex("0066FF"))));

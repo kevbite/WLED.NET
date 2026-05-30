@@ -51,12 +51,18 @@ await client.TurnOff();
 await client.Toggle();
 
 await client.SetBrightness(200);
-await client.SetColor(RgbColor.FromHex("FFAA00"));
-await client.SetEffect(9);    // by effect id
-await client.SetPalette(11);  // by palette id
+await client.SetColor(RgbColor.FromHex("FFAA00"));   // selected segments
+await client.SetColor(RgbColor.FromHex("FFAA00"), segmentId: 1);
+await client.SetEffect(9);                            // by effect id
+await client.SetPalette(11);                          // by palette id
+await client.SetEffect(Selector.Random);             // random effect
+await client.SetPalette(Selector.RandomInRange(5, 10)); // random palette in a range
 
 await client.Reboot();
 ```
+
+With no `segmentId`, `SetColor`/`SetEffect`/`SetPalette` target the currently *selected*
+segments (the WLED `"seg":{…}` object form); pass a `segmentId` to target one segment.
 
 ### Reading data
 
@@ -76,6 +82,7 @@ Build a sparse update that only sends the fields you set:
 await client.UpdateState(update => update
     .TurnOn()
     .Brightness(128)
+    .Transition(TimeSpan.FromSeconds(2))   // crossfade, up to ~109 minutes
     .Segment(0, segment => segment
         .Effect(0)
         .Color(RgbColor.FromHex("0066FF"))

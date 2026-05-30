@@ -39,6 +39,22 @@ rather than deprecated, so consuming code must be updated.
   request types, preventing accidental round-tripping of read-only fields.
 - Posting state is now done through intent methods or `UpdateState(...)` rather than mutating
   and re-posting a response object.
+- **`SetColor`/`SetEffect`/`SetPalette` with no `segmentId` now target the *selected* segments**
+  (the WLED `"seg":{…}` object form) instead of segment 0. The state `seg` field is modelled as
+  a `SegmentPayload` union that serialises as either an object (selected segments) or an array
+  (id-targeted).
+- **Transition values (`transition`/`tt`) widened from `byte` to `ushort`** to support the
+  documented `0–65535` range (~109 minutes) instead of clamping at 25.5 s.
+- **`ColorTemperature.Kelvin` range widened to `1000–20000 K`** to match the docs' forward-
+  compatible guidance, with a new `ColorTemperature.KelvinUnchecked(int)` escape hatch for
+  values outside that range.
+
+### Added
+
+- **Ranged-random effect/palette selection** via `Selector.RandomInRange(from, to)`
+  (the WLED `"from~tor"` token).
+- **Typed device-configuration fields** for `id.mdns`, `if.mqtt` (`en`/`broker`/`port`/`user`/`cid`)
+  and `def` (`on`/`bri`/`ps`), while preserving all other keys through `JsonExtensionData`.
 
 ### Removed
 
