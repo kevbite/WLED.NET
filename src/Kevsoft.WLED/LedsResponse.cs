@@ -30,19 +30,24 @@ public sealed class LedsResponse
     /// <c>true</c> if LEDs are 4-channel (RGB + White). Deprecated in favour of <see cref="LightCapabilities"/>.
     /// </summary>
     [JsonPropertyName("rgbw")]
+    // [Obsolete("Use LightCapabilities instead.")]
     public bool Rgbw { get; set; }
 
     /// <summary>
     /// <c>true</c> if a white channel slider should be displayed. Deprecated in favour of <see cref="LightCapabilities"/>.
     /// </summary>
     [JsonPropertyName("wv")]
-    public bool WhiteValueSlider { get; set; }
+    [JsonConverter(typeof(DeprecatedBooleanJsonConverter))]
+    // [Obsolete("Use LightCapabilities instead.")]
+    public bool? WhiteValueSlider { get; set; }
 
     /// <summary>
     /// <c>true</c> if the light supports colour temperature control. Deprecated in favour of <see cref="LightCapabilities"/>.
     /// </summary>
     [JsonPropertyName("cct")]
-    public bool SupportsColorTemperature { get; set; }
+    [JsonConverter(typeof(DeprecatedBooleanJsonConverter))]
+    // [Obsolete("Use LightCapabilities instead.")]
+    public bool? SupportsColorTemperature { get; set; }
 
     /// <summary>
     /// Current LED power usage in milliamps as determined by the ABL. 0 if ABL is disabled.
