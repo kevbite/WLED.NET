@@ -81,11 +81,15 @@ public sealed class WLedDevice
 
     /// <summary><c>true</c> if the device has a dedicated white channel.</summary>
     public bool SupportsWhiteChannel
+#pragma warning disable CS0618 // Type or member is obsolete
         => Information.Leds.LightCapabilities.HasFlag(LightCapability.WhiteChannel) || Information.Leds.Rgbw;
+#pragma warning restore CS0618 // Type or member is obsolete
 
     /// <summary><c>true</c> if the device supports colour temperature (CCT) control.</summary>
     public bool SupportsColorTemperature
-        => Information.Leds.LightCapabilities.HasFlag(LightCapability.ColorTemperature) || Information.Leds.SupportsColorTemperature;
+#pragma warning disable CS0618 // Type or member is obsolete
+        => Information.Leds.LightCapabilities.HasFlag(LightCapability.ColorTemperature) || Information.Leds.SupportsColorTemperature.GetValueOrDefault();
+#pragma warning restore CS0618 // Type or member is obsolete
 
     /// <summary>The segments that are currently selected.</summary>
     public IEnumerable<WLedDeviceSegment> SelectedSegments => Segments.Where(s => s.IsSelected);

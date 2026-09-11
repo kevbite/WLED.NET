@@ -73,6 +73,7 @@ public class JsonBuilder
 
     public static string CreateInformationJson(InformationResponse information)
     {
+#pragma warning disable CS0618 // Type or member is obsolete
         return $@"{{
                 ""ver"": ""{information.VersionName}"",
                 ""vid"": {information.BuildId},
@@ -82,8 +83,8 @@ public class JsonBuilder
                     ""lc"": {(byte)information.Leds.LightCapabilities},
                     ""seglc"": [{String.Join(",", information.Leds.SegmentLightCapabilities.Select(x => (byte)x))}],
                     ""rgbw"": {information.Leds.Rgbw.ToString().ToLower()},
-                    ""wv"": {information.Leds.WhiteValueSlider.ToString().ToLower()},
-                    ""cct"": {information.Leds.SupportsColorTemperature.ToString().ToLower()},
+                    ""wv"": {information.Leds.WhiteValueSlider.ToString()?.ToLower() ?? "0"},
+                    ""cct"": {information.Leds.SupportsColorTemperature?.ToString().ToLower() ?? "0"},
                     ""pwr"": {information.Leds.PowerUsage},
                     ""maxpwr"": {information.Leds.MaximumPower},
                     ""maxseg"": {information.Leds.MaximumSegments}
@@ -119,6 +120,7 @@ public class JsonBuilder
                 ""mac"": ""{information.MacAddress}"",
                 ""ip"": ""{information.NetworkAddress}""
                 }}";
+#pragma warning restore CS0618 // Type or member is obsolete
     }
 
     public static string CreateRootResponse(WLedRootResponse expected)
